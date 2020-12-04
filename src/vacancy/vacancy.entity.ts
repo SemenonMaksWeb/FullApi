@@ -1,9 +1,25 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn,ManyToOne } from 'typeorm';
+import {Сompany} from "../company/company.entity"
+import {VacancyPosition} from "../vacancy_position/vacancy_position.entity"
+import {City} from "../city/city.entity"
 @Entity()
 export class Vacancy {
   // id - Первичный ключ
   @PrimaryGeneratedColumn()
     id: number;
+  // Вторичный ключ  companyId 
+  @ManyToOne(()=> Сompany, company => company.id,{
+    nullable: false,
+  })
+    company: Сompany[];
+  // Вторичный ключ  мacancy_positionId 
+  @ManyToOne(()=> VacancyPosition, мacancy_position => мacancy_position.id,{
+  })
+  мacancy_position: VacancyPosition[];
+    // Вторичный ключ  companyId 
+    @ManyToOne(()=> City, city => city.id,{
+    })
+    city: City[];
   // content - html код вставленный!
   @Column({
     type: "text",
@@ -16,7 +32,7 @@ export class Vacancy {
     name: "title",
     type: "varchar",
     unique: true,
-    length: 255,
+    length: 128,
   })
     title: string;
   // active - состояние показывается ли вакансия

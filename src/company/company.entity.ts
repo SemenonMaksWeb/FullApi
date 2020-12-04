@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 @Entity()
 export class Сompany {
   // id - Первичный ключ
@@ -12,13 +12,6 @@ export class Сompany {
     unique:true,
   })
     name: string;
-  // city - город компании
-  @Column({
-    name: "city",
-    type: "varchar",
-    length: 155,
-  })
-    city: string;
   // address - город компании
   @Column({
     name: "address",
@@ -34,4 +27,11 @@ export class Сompany {
       nullable: true,
     })
     url_google_maps: string;    
+  // active - состояние показывается ли компания
+  @Column({
+    name:"active",
+    type: "boolean",
+    default: true,
+  })
+    active: boolean;
 }
