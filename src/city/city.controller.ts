@@ -1,4 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Post, Query } from '@nestjs/common';
+import { Like } from 'typeorm';
 import { CityService } from './city.service';
 import { CreateCityDto } from "./dto/create-city.dto"
 
@@ -7,43 +8,47 @@ export class CityController {
   constructor(private readonly CityService: CityService) {}
 
   @Post()
-  create(@Body() CreateCityDto: CreateCityDto) {
+  async create(@Body() CreateCityDto: CreateCityDto) {
+    let data = await this.CityService.create(CreateCityDto);
     return {
-      data: this.CityService.create(CreateCityDto)
+      data
     }
   }
 
   @Get()
   async findAll() {
+    let data = await this.CityService.findAll();
+    let meta  = this.CityService.setMetaGet(data, `Города не созданы`); 
     return {
-      data: await this.CityService.findAll()
+      data,
+      meta
     }
   }
-
+  @Get('like/:name')
+  async findLike(@Param('name') name: string) {
+    let data = await this.CityService.findLike(name);
+    let meta  = this.CityService.setMetaGet(data, `Города не созданы`); 
+    return {
+      data,
+      meta
+    }
+  }
   @Get(':id')
   async findOne(@Param('id') id: string) {
     let data = await this.CityService.findOne(id);
-    // if(data === undefined){
-    //   return{
-    //     meta:{
-    //       error: `Город с id ${id} не найден`,
-    //       status: 404,
-    //     }
-    //   }
-    // }
+    let meta  = this.CityService.setMetaGet(data, `Город с id ${id} не найден`); 
     return {
-      data: data,
-      // meta:{
-      //   status: 200,
-      // }
+      data,
+      meta
     }
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    this.CityService.remove(id)
+  async remove(@Param('id') id: string) {
+    let data = await this.CityService.remove(id);
+    let meta = this.CityService.setMetaDelete(data, `Город с id ${id} не найден`); 
     return {
-       
+      meta
     }
   }
 }
