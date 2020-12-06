@@ -1,5 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Post, Query } from '@nestjs/common';
-import { Like } from 'typeorm';
+import { Body, Controller, Delete, Get, HttpCode, Param, Post } from '@nestjs/common';
 import { CityService } from './city.service';
 import { CreateCityDto } from "./dto/create-city.dto"
 
@@ -27,7 +26,7 @@ export class CityController {
   @Get('like/:name')
   async findLike(@Param('name') name: string) {
     let data = await this.CityService.findLike(name);
-    let meta  = this.CityService.setMetaGet(data, `Города не созданы`); 
+    let meta  = this.CityService.setMetaGet(data, `Город ${name} не найден`); 
     return {
       data,
       meta

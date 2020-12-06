@@ -19,9 +19,9 @@ export class CityService {
     return this.CityRepository.find();
   }
   async findLike(nameQuery){
-    console.log(nameQuery);
+ 
     return await this.CityRepository.find({
-      name: nameQuery 
+      name: Like(`${nameQuery}%`) 
     });
   }
   findOne(id: string) {
