@@ -12,4 +12,8 @@ export class City {
     unique:true,
   })
     name: string;
-}
+    constructor(name?: string){
+      this.name = name || '';
+    }
+  }
+ 
