@@ -23,14 +23,10 @@ export class CityService {
   async update(id: string, body:CreateCityDto){
     const check = await this.ValidName(body.name);
     if(check === undefined){
-      return {
-        meta: 
-        {
-          status: 200, 
-          text: `Запись c id ${id} Успешно измененна`
-        }
-      }
-    }else{
+      let data = await this.CityRepository.update(id, body);
+      let meta = this.setMetaUpdate(data.affected, id);
+      return meta;
+    }else if(check !== undefined){
       return check
     } 
   }
@@ -67,7 +63,7 @@ export class CityService {
   setMetaDelete(response, errorMessage: string){
     if(response.affected === 0){ //  Количество удаленных записей
       return {
-        error: errorMessage,
+        text: errorMessage,
         status: 404
       }
     }else{
@@ -77,9 +73,24 @@ export class CityService {
       }
     }
   }
+  setMetaUpdate(response: number , id: string){
+    let meta = {};
+    if(response === 0){
+      meta["status"] = 404;
+      meta["text"] = `Город с ${id} не найден`
+      return meta;
+    }else if(response === 1){
+      meta["status"] = 200;
+      meta["text"] = `Запись c id ${id} Успешно измененна`
+      return meta;
+    }
+  }
   async ValidName(name){
+    let error = {};
     if(name === undefined){
-      return {error: "Вы не указали название города в теле ответа", info: "{'name': 'название города'}"}
+      error["text"] = "Вы не указали название города в теле ответа";
+      error["info"] = "{'name': 'название города'}";
+      return error
     }
     else if(typeof name !== "string"){
       return {error: "Название города является строкой"}
@@ -89,7 +100,8 @@ export class CityService {
         where: {name: name}
       })
       if(check !== undefined){
-        return {error: "Название города должно является уникальным значением"}
+        error["text"] = "Название города должно является уникальным значением";
+        return error
       }
 
     }
