@@ -10,23 +10,45 @@ export class CityService {
     private readonly CityRepository: Repository<City>,
   ) {}
 
-  create(CreateCityDto: CreateCityDto){
-    const user = new City();
-    user.name = CreateCityDto.name;
-    return this.CityRepository.save(user);
+  async create(CreateCityDto: CreateCityDto){
+    const city = new City();
+    city.name = CreateCityDto.name;
+    const check = await this.ValidName(city.name);
+    if(check === undefined){
+      return this.CityRepository.save(city);
+    }else{
+      return check
+    }
   }
-  findAll(){
-    return this.CityRepository.find();
+  async update(id: string, body:CreateCityDto){
+    const check = await this.ValidName(body.name);
+    if(check === undefined){
+      return {
+        meta: 
+        {
+          status: 200, 
+          text: `Запись c id ${id} Успешно измененна`
+        }
+      }
+    }else{
+      return check
+    } 
+  }
+  findAll(search){
+    if(search === undefined){
+      return this.CityRepository.find();
+    }else{
+      return this.findLike(search);
+    }
   }
   async findLike(nameQuery){
- 
     return await this.CityRepository.find({
       name: Like(`${nameQuery}%`) 
     });
   }
-  findOne(id: string) {
-    return this.CityRepository.findOne(id);
-  }
+  // findOne(id: string) {
+  //   return this.CityRepository.findOne(id);
+  // }
   async remove(id: string) {
     return await this.CityRepository.delete(id);
   }
@@ -53,6 +75,23 @@ export class CityService {
         status: 200,
         text: "Запись удачно удалена",
       }
+    }
+  }
+  async ValidName(name){
+    if(name === undefined){
+      return {error: "Вы не указали название города в теле ответа", info: "{'name': 'название города'}"}
+    }
+    else if(typeof name !== "string"){
+      return {error: "Название города является строкой"}
+    }
+    else{
+      let check  = await this.CityRepository.findOne({
+        where: {name: name}
+      })
+      if(check !== undefined){
+        return {error: "Название города должно является уникальным значением"}
+      }
+
     }
   }
 } 
