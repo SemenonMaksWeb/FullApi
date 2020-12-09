@@ -1,34 +1,35 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { check } from 'prettier';
+import { ApiValidateServer } from '../api_validate/api_validate.service';
 import { Like, Repository } from 'typeorm';
 import { Сompany } from './company.entity';
 import { CreateCompanyDto } from "./dto/create-company.dto"
 @Injectable()
 export class CompanyService {
   constructor(
+    private readonly ApiValidateServer: ApiValidateServer,
     @InjectRepository(Сompany)
     private readonly CompanyRepository: Repository<Сompany>,
-  ) {}
+  ) 
+  {}
 
   async create(CreateCompanyDto: CreateCompanyDto){
     const check = await this.ValidAll(CreateCompanyDto);
-    console.log(check);
-    if(check === undefined){
+    if(this.ApiValidateServer.errorObjectNull(check) === false){
       return await this.CompanyRepository.save(CreateCompanyDto);
     }else{
       return check
     }
   }
-  async update(id: string, body:CreateCompanyDto){
-    const check = await this.ValidName(body.name);
-    if(check === undefined){
-      let data = await this.CompanyRepository.update(id, body);
+  async update(id: string, CreateCompanyDto:CreateCompanyDto){
+    const check = await this.ValidAll(CreateCompanyDto);
+    if(this.ApiValidateServer.errorObjectNull(check) === false){
+      let data = await this.CompanyRepository.update(id, CreateCompanyDto);
       let meta = this.setMetaUpdate(data.affected, id);
-      return meta;
-    }else if(check !== undefined){
+      return meta
+    }else{
       return check
-    } 
+    }
   }
   findAll(search: string, page: string){
     if(search === undefined){
@@ -85,70 +86,50 @@ export class CompanyService {
       return meta;
     }
   }
-  ValidCheckUndefined(value){
-    if(value !== undefined){
-      return true;
-    }
-    else{
-      return false;
-    }
-  }
-  ValidCheckType(value, type: string){
-    if(typeof value === type ){
-      return true;
-    }
-    else{
-      return false;
-    }
-  }
-  async ValidCheckValueUnique(value, nameColumn: string){
-    let check  = await this.CompanyRepository.findOne({
-      where: {[nameColumn]: value}
-    })
-    if(check !== undefined){
-      return true
-    } 
-    else{
-       return false;
-    }
-  }
   async ValidAll(body){
     let error = {};
     error["name"] = await this.ValidName(body.name);
     error["address"] = await this.ValidAddress(body.address);
-    for (const key in error) {
-      console.log(error["key"] === undefined)
-      if(error["key"] === undefined){
-        delete error["key"];
-      }
-    }
+    error["url_google_maps"] = await this.ValidGoogleMap(body.url_google_maps);
+    error = this.ApiValidateServer.errorUndefinedDelete(error);
     return error;
   }
   async ValidName(name){
     let error = {};
-    if(!this.ValidCheckUndefined(name)){
+    if(this.ApiValidateServer.errorUndefined(name)){
       error["text"] = "Вы не указали название компания в теле ответа";
       error["info"] = "{'name': 'название компания'}";
       return error
-    }else if(!this.ValidCheckType(name,"string")){
+    }else if(this.ApiValidateServer.errorType(name,"string")){
       error["text"] = "Название компания является строкой"
       return error;
     }
-    else if(!this.ValidCheckValueUnique(name, "name")){
+    else if(await this.ApiValidateServer.errorUnique(this.CompanyRepository,name, "name")){
       error["text"] = "Название компания должно является уникальным значением";
       return error
     }
-    else{ undefined}
   }
   async ValidAddress(address){
     let error = {};
-    if(!this.ValidCheckUndefined(address)){
+    if(this.ApiValidateServer.errorUndefined(address)){
       error["text"] = "Вы не указали название адреса компании в теле ответа";
       error["info"] = "{'address': 'название адреса компании'}";
       return error
     }
-    else if(!this.ValidCheckType(address,"string")){
-        error["text"] = "Адрес компании должен являтся строкой";
-      }
+    else if(this.ApiValidateServer.errorType(address,"string")){
+      error["text"] = "Адрес компании должен являтся строкой";
+      return error
+    }
   }
-} 
+  async ValidGoogleMap(url:string){
+    let error = {};
+    if(this.ApiValidateServer.errorUndefined(url) === false){
+      if(this.ApiValidateServer.errorType(url, "string")){
+        error["text"] = "Сслыка на гугл карту должна быть строкой";
+        error["info"] = "{'url_google_maps': 'url-address'}";
+        return error
+      }
+    }
+  }
+}
+ 

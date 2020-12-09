@@ -3,9 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository } from 'typeorm';
 import { City } from './city.entity';
 import { CreateCityDto } from "./dto/create-city.dto"
+import { ApiValidateServer } from '../api_validate/api_validate.service';
 @Injectable()
 export class CityService {
   constructor(
+    private readonly ApiValidateServer: ApiValidateServer,
     @InjectRepository(City)
     private readonly CityRepository: Repository<City>,
   ) {}
@@ -14,7 +16,7 @@ export class CityService {
     const city = new City();
     city.name = CreateCityDto.name;
     const check = await this.ValidName(city.name);
-    if(check === undefined){
+    if(this.ApiValidateServer.errorUndefined(check) === false){
       return this.CityRepository.save(city);
     }else{
       return check
@@ -22,7 +24,7 @@ export class CityService {
   }
   async update(id: string, body:CreateCityDto){
     const check = await this.ValidName(body.name);
-    if(check === undefined){
+    if(this.ApiValidateServer.errorUndefined(check) === false){
       let data = await this.CityRepository.update(id, body);
       let meta = this.setMetaUpdate(data.affected, id);
       return meta;
@@ -87,23 +89,17 @@ export class CityService {
   }
   async ValidName(name){
     let error = {};
-    if(name === undefined){
+    if(this.ApiValidateServer.errorUndefined(name)){
       error["text"] = "Вы не указали название города в теле ответа";
       error["info"] = "{'name': 'название города'}";
       return error
     }
-    else if(typeof name !== "string"){
+    else if(this.ApiValidateServer.errorType(name, "string") ){
       return {error: "Название города является строкой"}
     }
-    else{
-      let check  = await this.CityRepository.findOne({
-        where: {name: name}
-      })
-      if(check !== undefined){
+    else if(this.ApiValidateServer.errorUnique(this.CityRepository, name, "name")){
         error["text"] = "Название города должно является уникальным значением";
         return error
       }
-
-    }
   }
 } 
