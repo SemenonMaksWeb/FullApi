@@ -3,28 +3,24 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Vacancy } from './vacancy.entity';
 import { CreateVacancyDto } from "./dto/create-vacancy.dto"
+import { ApiValidateServer } from '../api_validate/api_validate.service';
+
 @Injectable()
 export class VacancyService {
   constructor(
+    private readonly ApiValidateServer: ApiValidateServer,
     @InjectRepository(Vacancy)
     private readonly VacancyRepository: Repository<Vacancy>,
   ) {}
 
-  create(CreateVacancyDto: CreateVacancyDto){
-    let vacancy = new Vacancy();
-    let NotValid = {};
-    vacancy.chart_work = CreateVacancyDto.chart_work;
-    vacancy.income_max = CreateVacancyDto.income_max;
-    vacancy.income_min = CreateVacancyDto.income_min;
-    NotValid["income_min"] = this.checkValidIncomeMin(vacancy.income_min);
-    NotValid["chart_work"] = this.checkValidChartWork(vacancy.chart_work);
-    NotValid = this.checkErrorAll(NotValid);
-    if(NotValid){
+  create(CreateVacancyDto:CreateVacancyDto){
+    let NotValid = this.checkValidAll(CreateVacancyDto);
+    if(this.ApiValidateServer.errorObjectNull(NotValid)){
       return {error: NotValid}
     }else{
-      return vacancy;
+      return CreateVacancyDto
+      // return this.VacancyRepository.save(CreateVacancyDto);
     }
-    // return this.VacancyRepository.save(vacancy);
   }
   findAll(){
     return this.VacancyRepository.find();
@@ -35,35 +31,67 @@ export class VacancyService {
   async remove(id: string) {
     return await this.VacancyRepository.delete(id);
   }
-  
-  checkValidChartWork(value){
-    let NotValid = {};
-    if(typeof value !== "string"){
-      NotValid["type"] = "Указанное значение не является строкой";
-    }
-    return NotValid;
-  }
-  checkValidIncomeMin(value){
-    let NotValid = {};
-    if(typeof value !== "number"){
-      NotValid["type"] = "Указанное значение не является числом";
-    }
-    return NotValid;
-  }
-  
-  checkErrorAll(error:Object){
-     for (const key in error) {
-      if(Object.keys(error[key]).length === 0){
-        delete error[key];
+  async checkValidAll(body){
+    let error = {};
+    error['income_min'] = this.checkValidIncomeType(body.income_min);
+    error['income_max'] = this.checkValidIncomeType(body.income_max);
+    error["chart_work"] = this.checkValidStringUndefined(body.chart_work);
+    error['experience'] = this.checkValidStringUndefined(body.experience);
+    error['content'] = this.checkValidStringUndefined(body.content);
+    error['conditions'] = this.checkValidStringUndefined(body.conditions);
+    error['duties'] = this.checkValidStringUndefined(body.duties);
+    error['requirements'] = this.checkValidStringUndefined(body.requirements);
+    error['type_work'] = this.checkValidTypeWork(body.type_work);
+    error['title'] = await this.checkValidTitle(body.title);
+    error['title'] = await this.checkValidTitle(body.title);
+    if(error['income_min'] === undefined && error['income_max'] === undefined){
+      if(this.ApiValidateServer.errorMinMax(body.income_min,body.income_max )){
+        error['income'] = {};
+        error['income']['text'] = "минимальный доход больше максимального";
       }
-     }
-     if(Object.keys(error).length === 0){
-       return undefined;
-     }else{
-      return error;
-     }
+    }
+    error = this.ApiValidateServer.errorUndefinedDelete(error);
+    return error;
   }
-
+  checkValidStringUndefined(value){
+    if(this.ApiValidateServer.errorUndefined(value) === false){
+      if(this.ApiValidateServer.errorType(value, "string")){
+        return {text: "Указанное значение не является строкой"};
+      }
+    }
+  }
+  checkValidIncomeType(value){
+    if(this.ApiValidateServer.errorType(value, "number")){
+      return {text: "Указанное значение не является числом"};
+    }
+  }
+  async checkValidForeignKey(column, id ){
+    if(this.ApiValidateServer.errorUndefined(id) === false){
+      console.log(await this.VacancyRepository.findByIds(id));
+    }
+  }
+  
+  checkValidTypeWork(value){
+    let validValue = ["Удаленный", "В компании", null];
+    if(validValue.filter(data => data === value).length === 0){
+      return {text: "Тип работы указан не корректно", info: "Удаленный, В компании, null"}
+    }
+  } 
+  async checkValidTitle(value){
+    let error = {};
+    if(this.ApiValidateServer.errorUndefined(value)){
+      error["text"] = "Вы не указали вакансии города в теле ответа";
+      error["info"] = "{'title': 'название вакансии'}";
+      return error
+    }
+    else if(this.ApiValidateServer.errorType(value, "string") ){
+      return {error: "Название вакансии является строкой"}
+    }
+    else if(await this.ApiValidateServer.errorUnique(this.VacancyRepository, value, "title")){
+      error["text"] = "Название вакансии должно является уникальным значением";
+      return error
+    }
+  }
   setMetaGet(response, errorMessage: string){
     if(response === undefined || response.length === 0){
       return {

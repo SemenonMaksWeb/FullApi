@@ -8,5 +8,6 @@ import { ApiValidateServer } from '../api_validate/api_validate.service';
   imports: [TypeOrmModule.forFeature([City])],
   providers: [CityService,ApiValidateServer ],
   controllers: [CityController ],
+  // exports:[CityService]
 })
 export class CityModule {}

@@ -1,54 +1,54 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository } from 'typeorm';
-import { City } from './city.entity';
-import { CreateCityDto } from "./dto/create-city.dto"
+import { VacancyPosition } from './vacancy_position.entity';
+import { CreateVacancyPositionDto } from "./dto/create-vacancy_position.dto"
 import { ApiValidateServer } from '../api_validate/api_validate.service';
 @Injectable()
-export class CityService {
+export class VacancyPositionService {
   constructor(
     private readonly ApiValidateServer: ApiValidateServer,
-    @InjectRepository(City)
-    private readonly CityRepository: Repository<City>,
+    @InjectRepository(VacancyPosition)
+    private readonly VacancyPositionRepository: Repository<VacancyPosition>,
   ) {}
 
-  async create(CreateCityDto: CreateCityDto){
-    const city = new City();
-    city.name = CreateCityDto.name;
-    const check = await this.ValidName(city.name);
+  async create(CreateVacancyPositionDto: CreateVacancyPositionDto){
+    const vacancy_position = new VacancyPosition();
+    vacancy_position.name = CreateVacancyPositionDto.name;
+    const check = await this.ValidName(vacancy_position.name);
     if(this.ApiValidateServer.errorUndefined(check)){
-      return this.CityRepository.save(city);
+      return this.VacancyPositionRepository.save(vacancy_position);
     }else{
       return check
     }
   }
-  async update(id: string, body:CreateCityDto){
+  async update(id: string, body:CreateVacancyPositionDto){
     const check = await this.ValidName(body.name);
     if(this.ApiValidateServer.errorUndefined(check)){
-      let data = await this.CityRepository.update(id, body);
+      let data = await this.VacancyPositionRepository.update(id, body);
       let meta = this.setMetaUpdate(data.affected, id);
       return meta;
-    }else{
+    }else if(check !== undefined){
       return check
     } 
   }
   findAll(search){
     if(search === undefined){
-      return this.CityRepository.find();
+      return this.VacancyPositionRepository.find();
     }else{
       return this.findLike(search);
     }
   }
   async findLike(nameQuery){
-    return await this.CityRepository.find({
+    return await this.VacancyPositionRepository.find({
       name: Like(`${nameQuery}%`) 
     });
   }
   // findOne(id: string) {
-  //   return this.CityRepository.findOne(id);
+  //   return this.vacancy_positionRepository.findOne(id);
   // }
   async remove(id: string) {
-    return await this.CityRepository.delete(id);
+    return await this.VacancyPositionRepository.delete(id);
   }
   setMetaGet(response, errorMessage: string){
     if(response === undefined || response.length === 0){
@@ -79,7 +79,7 @@ export class CityService {
     let meta = {};
     if(response === 0){
       meta["status"] = 404;
-      meta["text"] = `Город с ${id} не найден`
+      meta["text"] = `должности вакансии с ${id} не найден`
       return meta;
     }else if(response === 1){
       meta["status"] = 200;
@@ -90,16 +90,16 @@ export class CityService {
   async ValidName(name){
     let error = {};
     if(this.ApiValidateServer.errorUndefined(name)){
-      error["text"] = "Вы не указали название города в теле ответа";
-      error["info"] = "{'name': 'название города'}";
+      error["text"] = "Вы не указали название должности вакансииа в теле ответа";
+      error["info"] = "{'name': 'название должности вакансииа'}";
       return error
     }
     else if(this.ApiValidateServer.errorType(name, "string") ){
-      return {error: "Название города является строкой"}
+      return {error: "Название должности вакансииа является строкой"}
     }
-    else if(this.ApiValidateServer.errorUnique(this.CityRepository, name, "name")){
-      error["text"] = "Название города должно является уникальным значением";
-      return error
-    }
+    else if(this.ApiValidateServer.errorUnique(this.VacancyPositionRepository, name, "name")){
+        error["text"] = "Название должности вакансииа должно является уникальным значением";
+        return error
+      }
   }
 } 

@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import e from 'express';
 @Injectable()
 export class ApiValidateServer {
   constructor() {}
@@ -35,6 +36,15 @@ export class ApiValidateServer {
     })
     if(check !== undefined)
       return true
+    else
+      return false;
+  }
+  // async errorValidForeignKey(table, id: number){
+
+  // }
+  errorMinMax(min: number, max: number){
+    if( min > max)
+      return true;
     else
       return false;
   }

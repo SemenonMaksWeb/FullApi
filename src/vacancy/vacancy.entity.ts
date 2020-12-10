@@ -14,10 +14,12 @@ export class Vacancy {
     company: Сompany[];
   // Вторичный ключ  мacancy_positionId 
   @ManyToOne(()=> VacancyPosition, мacancy_position => мacancy_position.id,{
+    nullable: false,
   })
   мacancy_position: VacancyPosition[];
     // Вторичный ключ  companyId 
     @ManyToOne(()=> City, city => city.id,{
+      nullable: false,
     })
     city: City[];
   // content - html код вставленный!
