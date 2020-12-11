@@ -1,37 +1,37 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 @Entity()
 export class Сompany {
   // id - Первичный ключ
   @PrimaryGeneratedColumn()
-    id: number;
+  id: number;
   // name - название компании
   @Column({
-    name: "name",
-    type: "varchar",
+    name: 'name',
+    type: 'varchar',
     length: 155,
-    unique:true,
+    unique: true,
   })
-    name: string;
+  name: string;
   // address - город компании
   @Column({
-    name: "address",
-    type: "varchar",
+    name: 'address',
+    type: 'varchar',
     length: 155,
   })
-    address: string;    
+  address: string;
   // url_google_maps - сслыка на местоположение в гугл картах
   @Column({
-      name: "url_google_maps",
-      type: "varchar",
-      length: 155,
-      nullable: true,
-    })
-    url_google_maps: string;    
+    name: 'url_google_maps',
+    type: 'varchar',
+    length: 155,
+    nullable: true,
+  })
+  url_google_maps: string;
   // active - состояние показывается ли компания
   @Column({
-    name:"active",
-    type: "boolean",
+    name: 'active',
+    type: 'boolean',
     default: true,
   })
-    active: boolean;
+  active: boolean;
 }

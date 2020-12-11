@@ -2,9 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like, In } from 'typeorm';
 import { Vacancy } from './vacancy.entity';
-import { CreateVacancyDto } from "./dto/create-vacancy.dto"
+import { CreateVacancyDto } from './dto/create-vacancy.dto';
 import { ApiValidateServer } from '../api_validate/api_validate.service';
-import { json } from 'express';
 
 @Injectable()
 export class VacancyService {
@@ -14,52 +13,62 @@ export class VacancyService {
     private readonly VacancyRepository: Repository<Vacancy>,
   ) {}
 
-  create(CreateVacancyDto:CreateVacancyDto){
-    let NotValid = this.checkValidAll(CreateVacancyDto);
-    if(this.ApiValidateServer.errorObjectNull(NotValid)){
-      return {error: NotValid}
-    }else{
-      return CreateVacancyDto
+  create(CreateVacancyDto: CreateVacancyDto) {
+    const NotValid = this.checkValidAll(CreateVacancyDto);
+    if (this.ApiValidateServer.errorObjectNull(NotValid)) {
+      return { error: NotValid };
+    } else {
+      return CreateVacancyDto;
       // return this.VacancyRepository.save(CreateVacancyDto);
     }
   }
-  findAll(query , limit=2){
-    let pagination = {}; // для пагинации
-    let filter = {}; // для пагинации
-    pagination["take"]  = limit;
-    let search = ""; // Поиск
-    if(query.page !== undefined && query.page !== 1 ){
-      pagination["skip"] = pagination["take"] * Number(query.page - 1);
+  findAll(query, limit = 2) {
+    // const pagination = this.setPagination(query.page, limit);
+    const where = {};
+    // pagination["take"]  = limit;
+    // if(query.page !== undefined && query.page !== 1 ){
+    //   pagination["skip"] = pagination["take"] * Number(query.page - 1);
+    // }
+    if (query.search !== undefined) {
+      where['title'] = Like(`${query.search}%`);
     }
-    if(query.search !== undefined){
-      search = query.search;
+    if (query.city !== undefined) {
+      where['city'] = In(query.city.split(','));
     }
-    if(query.city !== undefined){
-      filter['cityId'] = query.city.split(",");
+    if (query.vacancy !== undefined) {
+      where['vacancy_position'] = In(query.vacancy.split(','));
     }
     return this.VacancyRepository.find({
-      select:["id","title","income_min", "income_max", "content","experience"],
-      where:{
-        title: Like(`${search}%`),
-        city: In(filter['cityId'])
+      select: [
+        'id',
+        'title',
+        'income_min',
+        'income_max',
+        'content',
+        'experience',
+      ],
+      where: {
+        // title: Like(`${search}%`),
+        /**/ ...where,
+        // city: In(filter['cityId'])
       },
-      relations:["city", "vacancy_position", "company"],
-      ... pagination,
+      relations: ['city', 'vacancy_position', 'company'],
+      // ...pagination,
     });
   }
   findOne(id: string) {
-    return this.VacancyRepository.findOne(id,{
-      relations:["city", "vacancy_position", "company"]
+    return this.VacancyRepository.findOne(id, {
+      relations: ['city', 'vacancy_position', 'company'],
     });
   }
   async remove(id: string) {
     return await this.VacancyRepository.delete(id);
   }
-  async checkValidAll(body){
+  async checkValidAll(body) {
     let error = {};
     error['income_min'] = this.checkValidIncomeType(body.income_min);
     error['income_max'] = this.checkValidIncomeType(body.income_max);
-    error["chart_work"] = this.checkValidStringUndefined(body.chart_work);
+    error['chart_work'] = this.checkValidStringUndefined(body.chart_work);
     error['experience'] = this.checkValidStringUndefined(body.experience);
     error['content'] = this.checkValidStringUndefined(body.content);
     error['conditions'] = this.checkValidStringUndefined(body.conditions);
@@ -68,77 +77,93 @@ export class VacancyService {
     error['type_work'] = this.checkValidTypeWork(body.type_work);
     error['title'] = await this.checkValidTitle(body.title);
     error['title'] = await this.checkValidTitle(body.title);
-    if(error['income_min'] === undefined && error['income_max'] === undefined){
-      if(this.ApiValidateServer.errorMinMax(body.income_min,body.income_max )){
+    if (
+      error['income_min'] === undefined &&
+      error['income_max'] === undefined
+    ) {
+      if (
+        this.ApiValidateServer.errorMinMax(body.income_min, body.income_max)
+      ) {
         error['income'] = {};
-        error['income']['text'] = "минимальный доход больше максимального";
+        error['income']['text'] = 'минимальный доход больше максимального';
       }
     }
     error = this.ApiValidateServer.errorUndefinedDelete(error);
     return error;
   }
-  checkValidStringUndefined(value){
-    if(this.ApiValidateServer.errorUndefined(value) === false){
-      if(this.ApiValidateServer.errorType(value, "string")){
-        return {text: "Указанное значение не является строкой"};
+  checkValidStringUndefined(value) {
+    if (this.ApiValidateServer.errorUndefined(value) === false) {
+      if (this.ApiValidateServer.errorType(value, 'string')) {
+        return { text: 'Указанное значение не является строкой' };
       }
     }
   }
-  checkValidIncomeType(value){
-    if(this.ApiValidateServer.errorType(value, "number")){
-      return {text: "Указанное значение не является числом"};
+  checkValidIncomeType(value) {
+    if (this.ApiValidateServer.errorType(value, 'number')) {
+      return { text: 'Указанное значение не является числом' };
     }
   }
-  async checkValidForeignKey(column, id ){
-    if(this.ApiValidateServer.errorUndefined(id) === false){
+  async checkValidForeignKey(column, id) {
+    if (this.ApiValidateServer.errorUndefined(id) === false) {
       console.log(await this.VacancyRepository.findByIds(id));
     }
   }
-  
-  checkValidTypeWork(value){
-    let validValue = ["Удаленный", "В компании", null];
-    if(validValue.filter(data => data === value).length === 0){
-      return {text: "Тип работы указан не корректно", info: "Удаленный, В компании, null"}
-    }
-  } 
-  async checkValidTitle(value){
-    let error = {};
-    if(this.ApiValidateServer.errorUndefined(value)){
-      error["text"] = "Вы не указали вакансии города в теле ответа";
-      error["info"] = "{'title': 'название вакансии'}";
-      return error
-    }
-    else if(this.ApiValidateServer.errorType(value, "string") ){
-      return {error: "Название вакансии является строкой"}
-    }
-    else if(await this.ApiValidateServer.errorUnique(this.VacancyRepository, value, "title")){
-      error["text"] = "Название вакансии должно является уникальным значением";
-      return error
+
+  checkValidTypeWork(value) {
+    const validValue = ['Удаленный', 'В компании', null];
+    if (validValue.filter((data) => data === value).length === 0) {
+      return {
+        text: 'Тип работы указан не корректно',
+        info: 'Удаленный, В компании, null',
+      };
     }
   }
-  setMetaGet(response, errorMessage: string){
-    if(response === undefined || response.length === 0){
+  async checkValidTitle(value) {
+    const error = {};
+    if (this.ApiValidateServer.errorUndefined(value)) {
+      error['text'] = 'Вы не указали вакансии города в теле ответа';
+      error['info'] = "{'title': 'название вакансии'}";
+      return error;
+    } else if (this.ApiValidateServer.errorType(value, 'string')) {
+      return { error: 'Название вакансии является строкой' };
+    } else if (
+      await this.ApiValidateServer.errorUnique(
+        this.VacancyRepository,
+        value,
+        'title',
+      )
+    ) {
+      error['text'] = 'Название вакансии должно является уникальным значением';
+      return error;
+    }
+  }
+  setMetaGet(response, errorMessage: string) {
+    if (response === undefined || response.length === 0) {
       return {
         error: errorMessage,
-        status: 404
-      }
-    }else{
+        status: 404,
+      };
+    } else {
       return {
         status: 200,
-      }
+      };
     }
   }
-  setMetaDelete(response, errorMessage: string){
-    if(response.affected === 0){ //  Количество удаленных записей
+  setMetaDelete(response, errorMessage: string) {
+    if (response.affected === 0) {
+      //  Количество удаленных записей
       return {
         error: errorMessage,
-        status: 404
-      }
-    }else{
+        status: 404,
+      };
+    } else {
       return {
         status: 200,
-        text: "Запись удачно удалена",
-      }
+        text: 'Запись удачно удалена',
+      };
     }
   }
-} 
+  // setPagination(page, limit): object {
+  //   return;
+  // }
+}

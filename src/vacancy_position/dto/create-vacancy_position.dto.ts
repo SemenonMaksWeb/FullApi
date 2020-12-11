@@ -1,3 +1,3 @@
 export class CreateVacancyPositionDto {
-    name: string
-  }
+  name: string;
+}

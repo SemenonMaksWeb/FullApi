@@ -3,20 +3,20 @@ import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 export class VacancyPosition {
   // id - Первичный ключ
   @PrimaryGeneratedColumn()
-    id: number;
+  id: number;
   // name - название должности вакансии
   @Column({
-    name: "name",
-    type: "varchar",
+    name: 'name',
+    type: 'varchar',
     length: 155,
-    unique:true,
+    unique: true,
   })
-    name: string;
+  name: string;
   // active - состояние показывается ли должность
   @Column({
-    name:"active",
-    type: "boolean",
+    name: 'active',
+    type: 'boolean',
     default: true,
   })
-    active: boolean;
+  active: boolean;
 }

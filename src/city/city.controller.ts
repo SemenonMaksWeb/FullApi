@@ -1,6 +1,15 @@
-import { Body, Controller, Delete, Get, Param, Post, Query, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Query,
+  Put,
+} from '@nestjs/common';
 import { CityService } from './city.service';
-import { CreateCityDto } from "./dto/create-city.dto"
+import { CreateCityDto } from './dto/create-city.dto';
 
 @Controller('city')
 export class CityController {
@@ -8,25 +17,25 @@ export class CityController {
 
   @Post()
   async create(@Body() CreateCityDto: CreateCityDto) {
-    let data = await this.CityService.create(CreateCityDto);
+    const data = await this.CityService.create(CreateCityDto);
     return {
-      data
-    }
+      data,
+    };
   }
 
   @Get()
   async findAll(@Query('search') search: string) {
-    let data = await this.CityService.findAll(search);
-    let meta  = this.CityService.setMetaGet(data, `Города не найдены`); 
+    const data = await this.CityService.findAll(search);
+    const meta = this.CityService.setMetaGet(data, `Города не найдены`);
     return {
       data,
-      meta
-    }
+      meta,
+    };
   }
   // @Get(':id')
   // async findOne(@Param('id') id: string) {
   //   let data = await this.CityService.findOne(id);
-  //   let meta  = this.CityService.setMetaGet(data, `Город с id ${id} не найден`); 
+  //   let meta  = this.CityService.setMetaGet(data, `Город с id ${id} не найден`);
   //   return {
   //     data,
   //     meta
@@ -35,16 +44,18 @@ export class CityController {
 
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    let data = await this.CityService.remove(id);
-    let meta = this.CityService.setMetaDelete(data, `Город с id ${id} не найден`); 
+    const data = await this.CityService.remove(id);
+    const meta = this.CityService.setMetaDelete(
+      data,
+      `Город с id ${id} не найден`,
+    );
     return {
-      meta
-    }
+      meta,
+    };
   }
   @Put(':id')
   async update(@Param('id') id: string, @Body() CreateCityDto: CreateCityDto) {
-    let data = await this.CityService.update(id, CreateCityDto);
+    const data = await this.CityService.update(id, CreateCityDto);
     return data;
-    
   }
 }

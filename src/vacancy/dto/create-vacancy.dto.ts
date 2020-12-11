@@ -4,7 +4,7 @@ export class CreateVacancyDto {
   conditions: string;
   requirements: string;
   duties: string;
-  type_work: "Удаленный" | "В компании" | null;
+  type_work: 'Удаленный' | 'В компании' | null;
   experience: string;
   chart_work: string;
   income_min: number;

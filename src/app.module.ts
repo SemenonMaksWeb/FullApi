@@ -1,5 +1,10 @@
-import { Module, NestModule, RequestMethod, MiddlewareConsumer } from '@nestjs/common';
-import { TypeOrmModule } from "@nestjs/typeorm";
+import {
+  Module,
+  // NestModule,
+  // RequestMethod,
+  // MiddlewareConsumer,
+} from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { VacancyModule } from './vacancy/vacancy.module';
@@ -21,7 +26,7 @@ import { CityModule } from './city/city.module';
     VacancyModule,
     CompanyModule,
     VacancyPositionModule,
-    CityModule
+    CityModule,
   ],
   controllers: [AppController],
   providers: [AppService],

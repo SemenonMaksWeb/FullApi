@@ -7,7 +7,7 @@ import { ApiValidateServer } from '../api_validate/api_validate.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([VacancyPosition])],
-  providers: [ VacancyPositionService, ApiValidateServer ],
-  controllers: [VacancyPositionController ],
+  providers: [VacancyPositionService, ApiValidateServer],
+  controllers: [VacancyPositionController],
 })
 export class VacancyPositionModule {}

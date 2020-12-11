@@ -7,7 +7,7 @@ import { ApiValidateServer } from '../api_validate/api_validate.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Сompany])],
-  providers: [ CompanyService, ApiValidateServer],
-  controllers: [СompanyController ],
+  providers: [CompanyService, ApiValidateServer],
+  controllers: [СompanyController],
 })
 export class CompanyModule {}

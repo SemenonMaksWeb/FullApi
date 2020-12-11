@@ -9,7 +9,7 @@ import { ApiValidateServer } from '../api_validate/api_validate.service';
 // import {CityModule} from "../city/city.module"
 @Module({
   imports: [TypeOrmModule.forFeature([Vacancy])],
-  providers: [ VacancyService, ApiValidateServer],
-  controllers: [ VacancyController],
+  providers: [VacancyService, ApiValidateServer],
+  controllers: [VacancyController],
 })
 export class VacancyModule {}
