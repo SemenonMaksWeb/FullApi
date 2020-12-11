@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Like } from 'typeorm';
+import { Repository, Like, In } from 'typeorm';
 import { Vacancy } from './vacancy.entity';
 import { CreateVacancyDto } from "./dto/create-vacancy.dto"
 import { ApiValidateServer } from '../api_validate/api_validate.service';
+import { json } from 'express';
 
 @Injectable()
 export class VacancyService {
@@ -22,23 +23,28 @@ export class VacancyService {
       // return this.VacancyRepository.save(CreateVacancyDto);
     }
   }
-  findAll(query , limit: 2){
-    let filter = {};
-    filter["take"]  = limit;
-    let search = "";
+  findAll(query , limit=2){
+    let pagination = {}; // для пагинации
+    let filter = {}; // для пагинации
+    pagination["take"]  = limit;
+    let search = ""; // Поиск
     if(query.page !== undefined && query.page !== 1 ){
-      filter["skip"] = filter["take"] * Number(query.page - 1);
+      pagination["skip"] = pagination["take"] * Number(query.page - 1);
     }
     if(query.search !== undefined){
       search = query.search;
+    }
+    if(query.city !== undefined){
+      filter['cityId'] = query.city.split(",");
     }
     return this.VacancyRepository.find({
       select:["id","title","income_min", "income_max", "content","experience"],
       where:{
         title: Like(`${search}%`),
+        city: In(filter['cityId'])
       },
       relations:["city", "vacancy_position", "company"],
-      ... filter,
+      ... pagination,
     });
   }
   findOne(id: string) {
