@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Like } from 'typeorm';
 import { Vacancy } from './vacancy.entity';
 import { CreateVacancyDto } from "./dto/create-vacancy.dto"
 import { ApiValidateServer } from '../api_validate/api_validate.service';
@@ -22,11 +22,29 @@ export class VacancyService {
       // return this.VacancyRepository.save(CreateVacancyDto);
     }
   }
-  findAll(){
-    return this.VacancyRepository.find();
+  findAll(query , limit: 2){
+    let filter = {};
+    filter["take"]  = limit;
+    let search = "";
+    if(query.page !== undefined && query.page !== 1 ){
+      filter["skip"] = filter["take"] * Number(query.page - 1);
+    }
+    if(query.search !== undefined){
+      search = query.search;
+    }
+    return this.VacancyRepository.find({
+      select:["id","title","income_min", "income_max", "content","experience"],
+      where:{
+        title: Like(`${search}%`),
+      },
+      relations:["city", "vacancy_position", "company"],
+      ... filter,
+    });
   }
   findOne(id: string) {
-    return this.VacancyRepository.findOne(id);
+    return this.VacancyRepository.findOne(id,{
+      relations:["city", "vacancy_position", "company"]
+    });
   }
   async remove(id: string) {
     return await this.VacancyRepository.delete(id);

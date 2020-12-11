@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, Post, Query } from '@nestjs/common';
 import { VacancyService } from './vacancy.service';
 import { CreateVacancyDto } from "./dto/create-vacancy.dto"
+import { query } from 'express';
 
 @Controller('vacancy')
 export class VacancyController {
@@ -13,12 +14,13 @@ export class VacancyController {
   }
 
   @Get()
-  async findAll() {
-    let data = await this.VacancyService.findAll();
-    // let meta  = this.VacancyService.setMetaGet(data, `Вакансии не созданы`); 
+  async findAll(@Query() query) {
+    console.log(query)
+    let data = await this.VacancyService.findAll(query);
+    let meta  = this.VacancyService.setMetaGet(data, `Вакансии не найдены`); 
     return {
       data,
-      // meta
+      meta
     }
   }
   @Get(':id')

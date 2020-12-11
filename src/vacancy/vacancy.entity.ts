@@ -12,19 +12,19 @@ export class Vacancy {
     nullable: false,
   })
     company: Сompany[];
-  // Вторичный ключ  мacancy_positionId 
-  @ManyToOne(()=> VacancyPosition, мacancy_position => мacancy_position.id,{
+  // Вторичный ключ  vacancy_positionId 
+  @ManyToOne(()=> VacancyPosition, vacancy_position => vacancy_position.id,{
     nullable: false,
   })
-  мacancy_position: VacancyPosition[];
+  vacancy_position: VacancyPosition[];
     // Вторичный ключ  companyId 
     @ManyToOne(()=> City, city => city.id,{
       nullable: false,
     })
     city: City[];
-  // content - html код вставленный!
+  // content - описания вакансии при просмотре всех вакансии
   @Column({
-    type: "text",
+    type: "varchar",
     name: "content",
     nullable: true,
   })
