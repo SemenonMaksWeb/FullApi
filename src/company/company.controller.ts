@@ -24,8 +24,8 @@ export class СompanyController {
   }
 
   @Get()
-  async findAll(@Query('search, page') search: string, page: string) {
-    const data = await this.СompanyService.findAll(search, page);
+  async findAll(@Query('search, page') search: string) {
+    const data = await this.СompanyService.findAll(search);
     const meta = this.СompanyService.setMetaGet(data, `Города не найдены`);
     return {
       data,

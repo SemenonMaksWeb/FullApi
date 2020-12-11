@@ -4,6 +4,7 @@ import { Repository, Like, In } from 'typeorm';
 import { Vacancy } from './vacancy.entity';
 import { CreateVacancyDto } from './dto/create-vacancy.dto';
 import { ApiValidateServer } from '../api_validate/api_validate.service';
+import { City } from 'src/city/city.entity';
 
 @Injectable()
 export class VacancyService {
@@ -13,8 +14,8 @@ export class VacancyService {
     private readonly VacancyRepository: Repository<Vacancy>,
   ) {}
 
-  create(CreateVacancyDto: CreateVacancyDto) {
-    const NotValid = this.checkValidAll(CreateVacancyDto);
+  async create(CreateVacancyDto: CreateVacancyDto) {
+    const NotValid = await this.checkValidAll(CreateVacancyDto);
     if (this.ApiValidateServer.errorObjectNull(NotValid)) {
       return { error: NotValid };
     } else {
@@ -23,21 +24,8 @@ export class VacancyService {
     }
   }
   findAll(query, limit = 2) {
-    // const pagination = this.setPagination(query.page, limit);
-    const where = {};
-    // pagination["take"]  = limit;
-    // if(query.page !== undefined && query.page !== 1 ){
-    //   pagination["skip"] = pagination["take"] * Number(query.page - 1);
-    // }
-    if (query.search !== undefined) {
-      where['title'] = Like(`${query.search}%`);
-    }
-    if (query.city !== undefined) {
-      where['city'] = In(query.city.split(','));
-    }
-    if (query.vacancy !== undefined) {
-      where['vacancy_position'] = In(query.vacancy.split(','));
-    }
+    const pagination = this.setPagination(query.page, limit);
+    const where = this.setWhere(query.search, query.city, query.vacancy);
     return this.VacancyRepository.find({
       select: [
         'id',
@@ -48,12 +36,10 @@ export class VacancyService {
         'experience',
       ],
       where: {
-        // title: Like(`${search}%`),
-        /**/ ...where,
-        // city: In(filter['cityId'])
+        ...where,
       },
       relations: ['city', 'vacancy_position', 'company'],
-      // ...pagination,
+      ...pagination,
     });
   }
   findOne(id: string) {
@@ -77,6 +63,9 @@ export class VacancyService {
     error['type_work'] = this.checkValidTypeWork(body.type_work);
     error['title'] = await this.checkValidTitle(body.title);
     error['title'] = await this.checkValidTitle(body.title);
+    error['city'] = await this.checkValidCity(body.city);
+    error['company'] = await this.checkValidCompany(body.company);
+    error['position'] = await this.checkValidPosition(body.position);
     if (
       error['income_min'] === undefined &&
       error['income_max'] === undefined
@@ -91,6 +80,40 @@ export class VacancyService {
     error = this.ApiValidateServer.errorUndefinedDelete(error);
     return error;
   }
+
+  async checkValidCity(value) {
+    if (this.ApiValidateServer.errorUndefined(value)) {
+      return { text: 'Вы не указали id города', info: "'city': 'id города'" };
+    } else {
+      if (await this.ApiValidateServer.errorGetRepositoryId('city', value)) {
+        return { text: 'указанный город не найден' };
+      }
+    }
+  }
+  async checkValidCompany(value) {
+    if (this.ApiValidateServer.errorUndefined(value)) {
+      return {
+        text: 'Вы не указали id компании',
+        info: "'company': 'id компании'",
+      };
+    } else {
+      if (await this.ApiValidateServer.errorGetRepositoryId('сompany', value)) {
+        return { text: 'указанная компания не указана не найден' };
+      }
+    }
+  }
+  async checkValidPosition(value) {
+    if (this.ApiValidateServer.errorUndefined(value)) {
+      return {
+        text: 'Вы не указали id должности',
+        info: "'position': 'id должности'",
+      };
+    } else {
+      if (await this.ApiValidateServer.errorGetRepositoryId('vacancy_position', value)) {
+        return { text: 'указанная должность не найдена' };
+      }
+    }
+  }
   checkValidStringUndefined(value) {
     if (this.ApiValidateServer.errorUndefined(value) === false) {
       if (this.ApiValidateServer.errorType(value, 'string')) {
@@ -103,12 +126,6 @@ export class VacancyService {
       return { text: 'Указанное значение не является числом' };
     }
   }
-  async checkValidForeignKey(column, id) {
-    if (this.ApiValidateServer.errorUndefined(id) === false) {
-      console.log(await this.VacancyRepository.findByIds(id));
-    }
-  }
-
   checkValidTypeWork(value) {
     const validValue = ['Удаленный', 'В компании', null];
     if (validValue.filter((data) => data === value).length === 0) {
@@ -163,7 +180,25 @@ export class VacancyService {
       };
     }
   }
-  // setPagination(page, limit): object {
-  //   return;
-  // }
+  setPagination(page, limit) {
+    const pagination = {};
+    pagination['take'] = limit;
+    if (page !== undefined && page !== 1) {
+      pagination['skip'] = limit * Number(page - 1);
+    }
+    return pagination;
+  }
+  setWhere(search, city, vacancy) {
+    const where = {};
+    if (search !== undefined) {
+      where['title'] = Like(`${search}%`);
+    }
+    if (city !== undefined) {
+      where['city'] = In(city.split(','));
+    }
+    if (vacancy !== undefined) {
+      where['vacancy_position'] = In(vacancy.split(','));
+    }
+    return where;
+  }
 }

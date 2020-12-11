@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { getRepository } from 'typeorm';
 @Injectable()
 export class ApiValidateServer {
   // constructor() {}
@@ -29,6 +30,11 @@ export class ApiValidateServer {
   }
   errorMinMax(min: number, max: number) {
     if (min > max) return true;
+    else return false;
+  }
+  async errorGetRepositoryId(RepositoryName: string, value) {
+    const Repository = getRepository(RepositoryName);
+    if ((await Repository.findOne(value)) === undefined) return true;
     else return false;
   }
 }
