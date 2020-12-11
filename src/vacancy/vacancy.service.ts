@@ -4,7 +4,6 @@ import { Repository, Like, In } from 'typeorm';
 import { Vacancy } from './vacancy.entity';
 import { CreateVacancyDto } from './dto/create-vacancy.dto';
 import { ApiValidateServer } from '../api_validate/api_validate.service';
-import { City } from 'src/city/city.entity';
 
 @Injectable()
 export class VacancyService {
@@ -19,8 +18,18 @@ export class VacancyService {
     if (this.ApiValidateServer.errorObjectNull(NotValid)) {
       return { error: NotValid };
     } else {
-      return CreateVacancyDto;
-      // return this.VacancyRepository.save(CreateVacancyDto);
+      // return CreateVacancyDto;
+      await this.VacancyRepository.save(CreateVacancyDto);
+      return{}
+    }
+  }
+  async update(CreateVacancyDto: CreateVacancyDto, id:string) {
+    const NotValid = await this.checkValidAll(CreateVacancyDto);
+    if (this.ApiValidateServer.errorObjectNull(NotValid)) {
+      return { error: NotValid };
+    } else {
+      // return CreateVacancyDto;
+      // return this.VacancyRepository.update(CreateVacancyDto);
     }
   }
   findAll(query, limit = 2) {
@@ -65,7 +74,7 @@ export class VacancyService {
     error['title'] = await this.checkValidTitle(body.title);
     error['city'] = await this.checkValidCity(body.city);
     error['company'] = await this.checkValidCompany(body.company);
-    error['position'] = await this.checkValidPosition(body.position);
+    error['position'] = await this.checkValidPosition(body.vacancy_position);
     if (
       error['income_min'] === undefined &&
       error['income_max'] === undefined

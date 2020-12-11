@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, Delete } from '@nestjs/common';
 import { VacancyService } from './vacancy.service';
 import { CreateVacancyDto } from './dto/create-vacancy.dto';
 
@@ -19,6 +19,17 @@ export class VacancyController {
     const meta = this.VacancyService.setMetaGet(data, `Вакансии не найдены`);
     return {
       data,
+      meta,
+    };
+  }
+  @Delete(':id')
+  async remove(@Param('id') id: string) {
+    const data = await this.VacancyService.remove(id);
+    const meta = this.VacancyService.setMetaDelete(
+      data,
+      `Вакансия с id ${id} не найдена`,
+    );
+    return {
       meta,
     };
   }
