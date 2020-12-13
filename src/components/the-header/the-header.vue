@@ -3,16 +3,14 @@
     <container>
       <section class="section-header-main">
         <div class="wrapper-header-main">
-          <div class="navbar-header-main">
-            <font-awesome unicode="&#xf0c9;" />
-          </div>
+          <the-header-navbar />
           <router-link to="/" class="logo">logo </router-link>
         </div>
         <div class="wrapper-header-main">
           <router-link to="/" class="icons_user_header-main">
             <font-awesome unicode="&#xf007;" />
           </router-link>
-          <button class="icons_exit_header-main">Выход</button>
+          <the-header-exit />
         </div>
       </section>
     </container>
@@ -22,9 +20,11 @@
 <script>
 import Container from '@/components/base/container';
 import FontAwesome from '@/components/base/font-awesome';
+import TheHeaderNavbar from '@/components/the-header/the-header-navbar';
+import TheHeaderExit from '@/components/the-header/the-header-exit';
 export default {
   name: 'the-header',
-  components: { FontAwesome, Container },
+  components: { TheHeaderExit, TheHeaderNavbar, FontAwesome, Container },
 };
 </script>
 

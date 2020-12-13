@@ -1,12 +1,14 @@
 <template>
   <the-header />
+  <the-aside />
   <router-view />
 </template>
 
 <script>
 import TheHeader from '@/components/the-header/the-header';
+import TheAside from '@/components/the-aside/the-aside';
 export default {
-  components: { TheHeader },
+  components: { TheAside, TheHeader },
 };
 </script>
 <style lang="sass">
