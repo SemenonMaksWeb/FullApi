@@ -1,9 +1,15 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </div>
+  <the-header />
   <router-view />
 </template>
 
-<style lang="sass"></style>
+<script>
+import TheHeader from '@/components/the-header/the-header';
+export default {
+  components: { TheHeader },
+};
+</script>
+<style lang="sass">
+@import "assets/sass/reset"
+@import "assets/sass/fonts/index"
+</style>
