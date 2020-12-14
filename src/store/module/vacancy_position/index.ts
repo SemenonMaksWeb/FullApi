@@ -8,14 +8,10 @@ import {
   ActionTypesFunction,
   VacancyPositionGettersTypes,
 } from '@/store/module/vacancy_position/type';
-export const state: StateAll = {
-  VacancyPosition: [{
-    id:1,
-    name:"das",
-    active: true
-  }],
+const state: StateAll = {
+  VacancyPosition: [],
 };
-export const mutations: MutationTree<StateAll> & MutationsTypesFunction = {
+const mutations: MutationTree<StateAll> & MutationsTypesFunction = {
   [MutationTypesName.SetVacancyPosition](
     state: StateAll,
     data: StateVacancyPosition[]
@@ -24,16 +20,17 @@ export const mutations: MutationTree<StateAll> & MutationsTypesFunction = {
   },
 };
 
-export const actions: ActionTree<StateAll, {}> & ActionTypesFunction = {
+const actions: ActionTree<StateAll, {}> & ActionTypesFunction = {
   [ActionTypesName.AxiosVacancyPosition]({ commit }) {
-    console.log('Заппрс на сервер');
-    let data = [{ id: 1, name: 'dasd', active: true }];
+    console.log('Запрос на сервер');
+    const data = [{ id: 1, name: 'dasd', active: true }];
     commit(MutationTypesName.SetVacancyPosition, data);
   },
 };
 
-export const getters: GetterTree<StateAll, {}> & VacancyPositionGettersTypes = {
+const getters: GetterTree<StateAll, {}> & VacancyPositionGettersTypes = {
   VacancyPosition: (state: StateAll) => {
     return state.VacancyPosition;
   },
 };
+export default { mutations, getters, actions, state };
