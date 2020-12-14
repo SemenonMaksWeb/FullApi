@@ -9,7 +9,7 @@
     "lint:js": "eslint --ext .js,.vue --ignore-path .gitignore .",
     "lint:style": "stylelint **/*.{vue,css} --ignore-path .gitignore",
     "lint": "npm run lint:js && npm run lint:style",
-    "prettier": "prettier --write src/{components,store,router,assets,api,views}/**/*.{js,ts,vue}",
+    "prettier": "prettier --write src/{composition,components,store,router,assets,api,views}/**/*.{js,ts,vue}",
     "lint:all": "npm run lint && npm run prettier"
   },
   "dependencies": {
