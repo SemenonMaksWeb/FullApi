@@ -1,20 +1,12 @@
 import { computed, onMounted } from 'vue';
-import { useStore } from '@/store/index';
-import {
-  MutationsTypesFunction,
-  ActionTypesName,
-} from '@/store/module/vacancy_position/type';
+import { useStore } from 'vuex';
 
 export function ViewsVacancyPosition() {
   const store = useStore();
-  const VacancyPosition = computed(() => store.getters.VacancyPosition);
+  const VacancyPosition = computed(() => store.getters['GetVacancyPosition']);
   const AxiosVacancyPosition = async () => {
-    await store.dispatch(ActionTypesName.AxiosVacancyPosition);
+    await store.dispatch('ActionVacancyPosition');
   };
-  const ConsoleLog = () => {
-    console.log(store);
-  };
-  onMounted(ConsoleLog);
   onMounted(AxiosVacancyPosition);
-  return { VacancyPosition, ConsoleLog };
+  return { VacancyPosition };
 }
