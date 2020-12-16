@@ -1,8 +1,11 @@
 import { ValidateInput } from '@/composition/validate/validate-input.ts';
-export function ValidateForm(FormData: any) {
+import {
+  FormData
+} from '@/composition/validate/validate-type.ts';
+export function ValidateForm(FormData: FormData) {
   const AllCheckChient = (): boolean => {
-    let fullValidClient = true;
-    for (const keyNameInput in FormData) {
+    let fullValidClient = true; 
+    for (let keyNameInput in FormData) {
       ValidateInput(FormData, keyNameInput).OnSwitch();
       for (const key in FormData[keyNameInput].error) {
         if (

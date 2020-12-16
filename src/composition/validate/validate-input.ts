@@ -1,3 +1,6 @@
+import {
+  FormDataInput
+} from '@/composition/validate/validate-type.ts';
 export function ValidateInput(FormData: any, NameInput: string) {
   const ErrorUndefined = (name: string) => {
     FormData[name].error.undefined.active = FormData[name].value === '';
