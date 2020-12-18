@@ -1,16 +1,14 @@
 import { ValidateInput } from '@/composition/validate/validate-input.ts';
-import {
-  FormData
-} from '@/composition/validate/validate-type.ts';
-export function ValidateForm(FormData: FormData) {
+import { FormData } from '@/composition/validate/validate-type.ts';
+export function ValidateForm(FormDataAll: FormData) {
   const AllCheckChient = (): boolean => {
-    let fullValidClient = true; 
-    for (let keyNameInput in FormData) {
-      ValidateInput(FormData, keyNameInput).OnSwitch();
-      for (const key in FormData[keyNameInput].error) {
+    let fullValidClient = true;
+    for (const keyNameInput in FormDataAll) {
+      ValidateInput(FormDataAll, keyNameInput).OnSwitch();
+      for (const key in FormDataAll[keyNameInput].error) {
         if (
-          FormData[keyNameInput].error[key].active === true &&
-          FormData[keyNameInput].error[key].type !== 'server'
+          FormDataAll[keyNameInput].error[key].active === true &&
+          FormDataAll[keyNameInput].error[key].type !== 'server'
         ) {
           fullValidClient = false;
           break;
@@ -22,13 +20,15 @@ export function ValidateForm(FormData: FormData) {
   const AllCheckServer = (checkClient: boolean): boolean => {
     let checkServer = true;
     if (checkClient === true) {
-      for (const keyNameInput in FormData) {
-        for (const keyNamePag in FormData[keyNameInput].regulationsServer) {
-          if (FormData[keyNameInput].regulationsServer[keyNamePag]() === true) {
-            FormData[keyNameInput].error[keyNamePag].active = true;
+      for (const keyNameInput in FormDataAll) {
+        for (const keyNamePag in FormDataAll[keyNameInput].regulationsServer) {
+          if (
+            FormDataAll[keyNameInput].regulationsServer[keyNamePag]() === true
+          ) {
+            FormDataAll[keyNameInput].error[keyNamePag].active = true;
             checkServer = false;
           } else {
-            FormData[keyNameInput].error[keyNamePag].active = false;
+            FormDataAll[keyNameInput].error[keyNamePag].active = false;
           }
         }
       }

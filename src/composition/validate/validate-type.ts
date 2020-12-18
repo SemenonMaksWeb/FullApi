@@ -23,21 +23,15 @@ export type regulations =
   | 'MinLength'
   | 'MaxLength';
 
-const res: regulations[] = ['RegExp', 'MinLength'];
-
-export type FormDataInput ={
-  regulations: regulations[],
-  regulationsServer?: any,
+export type FormDataInput = {
+  regulations: regulations[];
+  regulationsServer?: any;
   error: {
-    [item:string]:ErrorObject
-  },
-  value: string,
-  params?: ValidateParamsAll,
-}
+    [item: string]: ErrorObject;
+  };
+  value: string;
+  params?: ValidateParamsAll;
+};
 export type FormData = {
-  [item:string]: FormDataInput,
-}
-const a:FormData = {
-  d: {error:{MinLength:{text:"d",active:false }} , regulations:["MinLength"] ,value: "" }
-  }
- 
+  [item: string]: FormDataInput;
+};

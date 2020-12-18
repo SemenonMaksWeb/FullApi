@@ -56,7 +56,7 @@ module.exports = {
     "vue/mustache-interpolation-spacing": ["warn", "always"],
     "vue/no-multi-spaces": ["warn"],
     "vue/no-spaces-around-equal-signs-in-attribute": ["warn"],
-    "vue/prop-name-casing": ["warn", "snake_case"],
+    // "vue/prop-name-casing": ["warn", "snake_case"],
     "vue/require-prop-types": "warn",
     "vue/order-in-components": [
       "warn",

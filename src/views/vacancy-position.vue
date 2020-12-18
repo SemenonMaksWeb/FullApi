@@ -1,18 +1,24 @@
 <template>
   <container>
     <div>{{ VacancyPosition }}</div>
+    <base-table
+      :array="VacancyPosition"
+      :type-table="VacancyPositionMapTable"
+    />
   </container>
 </template>
 
 <script lang="ts">
 import { ViewsVacancyPosition } from '@/composition/views/vacancy-position';
+import { VacancyPositionMapTable } from '@/composition/table-map/vacancy-position.ts';
 import Container from '@/components/base/container.vue';
+import BaseTable from '@/components/base/table/base-table.vue';
 
 export default {
   name: 'vacancy-position',
-  components: { Container },
+  components: { Container, BaseTable },
   setup() {
-    return { ...ViewsVacancyPosition() };
+    return { ...ViewsVacancyPosition(), VacancyPositionMapTable };
   },
 };
 </script>

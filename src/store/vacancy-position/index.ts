@@ -1,5 +1,4 @@
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators';
-import axios from 'axios';
 import { VacancyPositionAxios } from '@/store/vacancy-position/axios.ts';
 import { InterfaceVacancyPositionAxios } from '@/store/vacancy-position/state-type.ts';
 @Module
