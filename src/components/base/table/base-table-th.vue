@@ -3,7 +3,7 @@
     <th>{{ dataTh.text }}</th>
   </template>
   <template v-else>
-    <base-table-tg
+    <base-table-th
       v-for="data in dataTh.object"
       :data-th="data"
       :key="data.id"
@@ -15,7 +15,7 @@
 import { PropType } from 'vue';
 import { InterfaceMapTable } from '@/composition/table-map/type.ts';
 export default {
-  name: 'base-table-tg',
+  name: 'base-table-th',
   props: {
     dataTh: {
       typeTable: Object as () => PropType<InterfaceMapTable>,

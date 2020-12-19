@@ -2,11 +2,17 @@
   <table>
     <thead>
       <tr>
-        <BaseTableTg :data-th="data" :key="data.id" v-for="data in typeTable" />
+        <BaseTableTh :data-th="data" :key="data.id" v-for="data in typeTable" />
       </tr>
     </thead>
     <tbody>
-      <!--    <tr></tr>-->
+      <tr v-for="dataset in array">
+        <base-table-td
+          :dataset="dataset"
+          :type-table="typeTable"
+          :key="dataset.id"
+        />
+      </tr>
     </tbody>
   </table>
 </template>
@@ -14,10 +20,11 @@
 <script lang="ts">
 import { PropType } from 'vue';
 import { InterfaceMapTable } from '@/composition/table-map/type.ts';
-import BaseTableTg from '@/components/base/table/base-table-th.vue';
+import BaseTableTh from '@/components/base/table/base-table-th.vue';
+import BaseTableTd from '@/components/base/table/base-table-td.vue';
 export default {
   name: 'base-table',
-  components: { BaseTableTg },
+  components: { BaseTableTd, BaseTableTh },
   props: {
     typeTable: Array as () => PropType<InterfaceMapTable>,
     array: Array,
