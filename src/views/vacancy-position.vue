@@ -1,9 +1,9 @@
 <template>
   <container>
-    <div>{{ VacancyPosition }}</div>
     <base-table
       :array="VacancyPosition"
       :type-table="VacancyPositionMapTable"
+      :title-table="'Должности вакансии'"
     />
   </container>
 </template>
@@ -24,5 +24,4 @@ export default {
 </script>
 
 <!--<style lang="sass">-->
-
 <!--</style>-->

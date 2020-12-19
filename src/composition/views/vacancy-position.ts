@@ -5,7 +5,7 @@ export function ViewsVacancyPosition() {
   const store = useStore();
   const VacancyPosition = computed(() => store.getters['GetVacancyPosition']);
   const AxiosVacancyPosition = async () => {
-    await store.dispatch('ActionVacancyPosition');
+    await store.dispatch('VacancyPositionActionGet');
   };
   onMounted(AxiosVacancyPosition);
   return { VacancyPosition };

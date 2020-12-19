@@ -1,5 +1,5 @@
-import { ValidateInput } from '@/composition/validate/validate-input.ts';
-import { FormData } from '@/composition/validate/validate-type.ts';
+import { ValidateInput } from '@/composition/_plagins/validate/validate-input.js';
+import { FormData } from '@/composition/_plagins/validate/validate-type.js';
 export function ValidateForm(FormDataAll: FormData) {
   const AllCheckChient = (): boolean => {
     let fullValidClient = true;

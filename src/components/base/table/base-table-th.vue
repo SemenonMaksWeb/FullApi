@@ -1,6 +1,6 @@
 <template>
   <template v-if="dataTh.type !== 'object'">
-    <th>{{ dataTh.text }}</th>
+    <th class="base-table-th">{{ dataTh.text }}</th>
   </template>
   <template v-else>
     <base-table-th

@@ -18,7 +18,7 @@
 <script lang="ts">
 import { PropType } from 'vue';
 import { InterfaceLink } from '@/composition/aside/aside-link-list.ts';
-import { ToggleClick } from '@/composition/toggle/toggle-click.ts';
+import { ToggleClick } from '@/composition/_plagins/toggle/toggle-click.ts';
 export default {
   name: 'the-aside-link',
   props: {
