@@ -1,5 +1,8 @@
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators';
-import { VacancyPositionAxiosGet, VacancyPositionAxiosDelete } from '@/store/vacancy-position/axios.ts';
+import {
+  VacancyPositionAxiosGet,
+  VacancyPositionAxiosDelete,
+} from '@/store/vacancy-position/axios.ts';
 import { InterfaceVacancyPositionAxios } from '@/store/vacancy-position/state-type.ts';
 @Module
 export default class VacancyPosition extends VuexModule {
@@ -26,12 +29,14 @@ export default class VacancyPosition extends VuexModule {
     }
   }
   @Action({})
-  async VacancyPositionActionDelete(id:string){
-    const index = this.context.getters["GetVacancyPositionIndex"](id);
-    if (index !== -1){ // Запись найдена
-      const  data =  await VacancyPositionAxiosDelete(id);
-      if(data){ // Ошибок с сервера нету
-        this.context.commit("DeleteVacancyPosition", index);
+  async VacancyPositionActionDelete(id: string) {
+    const index = this.context.getters['GetVacancyPositionIndex'](id);
+    if (index !== -1) {
+      // Запись найдена
+      const data = await VacancyPositionAxiosDelete(id);
+      if (data) {
+        // Ошибок с сервера нету
+        this.context.commit('DeleteVacancyPosition', index);
       }
     }
   }
@@ -39,9 +44,13 @@ export default class VacancyPosition extends VuexModule {
     return this.VacancyPosition;
   }
   get GetVacancyPositionIndex(): (id: number) => void {
-    return (id: number) => { return  this.VacancyPosition.findIndex(data => data.id === id) };
+    return (id: number) => {
+      return this.VacancyPosition.findIndex(data => data.id === id);
+    };
   }
   get GetVacancyPositionFind(): (id: number) => void {
-    return (id: number) => { return this.VacancyPosition.find(data => data.id == Number(id) ) };
+    return (id: number) => {
+      return this.VacancyPosition.find(data => data.id == Number(id));
+    };
   }
 }

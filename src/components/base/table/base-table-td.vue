@@ -19,10 +19,10 @@
       :key="data.id"
     />
   </template>
-  <!-- Это знак Посмотреть -->
+  <!-- Это знак Изменить -->
   <td class="base-table-td">
     <router-link :to="'/' + routerLinkGetId + '/' + dataset.id">
-      <font-awesome class="base-table-link" unicode="&#xf06e;" />
+      <font-awesome class="base-table-link" unicode="&#xf044;" />
     </router-link>
   </td>
   <!-- Это знак Удалить -->
@@ -32,10 +32,6 @@
       class="base-table-link"
       unicode="&#xf057;"
     />
-  </td>
-  <!-- Это знак Изменить -->
-  <td class="base-table-td">
-    <font-awesome class="base-table-link" unicode="&#xf044;" />
   </td>
 </template>
 

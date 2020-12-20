@@ -8,9 +8,8 @@
     <thead>
       <tr>
         <BaseTableTh :data-th="data" :key="data.id" v-for="data in typeTable" />
-        <th class="base-table-th">Посмотреть</th>
-        <th class="base-table-th">Удалить</th>
         <th class="base-table-th">Изменить</th>
+        <th class="base-table-th">Удалить</th>
       </tr>
     </thead>
     <tbody>

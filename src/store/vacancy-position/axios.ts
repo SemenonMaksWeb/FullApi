@@ -26,8 +26,10 @@ export async function VacancyPositionAxiosGet() {
     return null;
   }
 }
-export async function VacancyPositionAxiosDelete(id:string) {
-  const dataset = await axios.delete(`http://localhost:3000/vacancy_position/${id}`);
+export async function VacancyPositionAxiosDelete(id: string) {
+  const dataset = await axios.delete(
+    `http://localhost:3000/vacancy_position/${id}`
+  );
   if (dataset.data.meta.status === 200) {
     return true;
   } else {
