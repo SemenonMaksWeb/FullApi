@@ -21,19 +21,21 @@
   </template>
   <!-- Это знак Посмотреть -->
   <td class="base-table-td">
-    <font-awesome class="base-table-cursor" unicode="&#xf06e;" />
+    <router-link :to="'/' + routerLinkGetId + '/' + dataset.id">
+      <font-awesome class="base-table-link" unicode="&#xf06e;" />
+    </router-link>
   </td>
   <!-- Это знак Удалить -->
   <td class="base-table-td">
     <font-awesome
-      @click="deleteTd('VacancyPositionActionDelete', dataset.id)"
-      class="base-table-cursor"
+      @click="deleteTd(deleteDispatch, dataset.id)"
+      class="base-table-link"
       unicode="&#xf057;"
     />
   </td>
   <!-- Это знак Изменить -->
   <td class="base-table-td">
-    <font-awesome class="base-table-cursor" unicode="&#xf044;" />
+    <font-awesome class="base-table-link" unicode="&#xf044;" />
   </td>
 </template>
 
@@ -52,6 +54,12 @@ export default {
     },
     dataset: {
       type: Object,
+    },
+    deleteDispatch: {
+      type: String,
+    },
+    routerLinkGetId: {
+      type: String,
     },
   },
   setup() {

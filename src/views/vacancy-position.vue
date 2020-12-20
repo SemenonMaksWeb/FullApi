@@ -4,6 +4,8 @@
       :array="VacancyPosition"
       :type-table="VacancyPositionMapTable"
       :title-table="'Должности вакансии'"
+      :delete-dispatch="'VacancyPositionActionDelete'"
+      :router-link-get-id="'vacancy/position'"
     />
   </container>
 </template>

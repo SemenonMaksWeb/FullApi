@@ -11,12 +11,8 @@ export default class VacancyPosition extends VuexModule {
     this.VacancyPosition = data;
   }
   @Mutation
-  DeleteVacancyPosition(id: number) {
-    // this.VacancyPosition = data;
-  }
-  @Mutation
-  FilterId(id:number):number {
-    return this.VacancyPosition.findIndex(data => data.id === id);
+  DeleteVacancyPosition(index: number) {
+    this.VacancyPosition.splice(index, 1);
   }
   @Mutation
   TrueCheck() {
@@ -31,14 +27,21 @@ export default class VacancyPosition extends VuexModule {
   }
   @Action({})
   async VacancyPositionActionDelete(id:string){
-    const  data =  await VacancyPositionAxiosDelete(id);
-    if(data){
-      const index = this.context.commit("FilterId", id);
-      console.log(index);
-      this.context.commit("DeleteVacancyPosition", index)
+    const index = this.context.getters["GetVacancyPositionIndex"](id);
+    if (index !== -1){ // Запись найдена
+      const  data =  await VacancyPositionAxiosDelete(id);
+      if(data){ // Ошибок с сервера нету
+        this.context.commit("DeleteVacancyPosition", index);
+      }
     }
   }
   get GetVacancyPosition(): InterfaceVacancyPositionAxios[] {
     return this.VacancyPosition;
+  }
+  get GetVacancyPositionIndex(): (id: number) => void {
+    return (id: number) => { return  this.VacancyPosition.findIndex(data => data.id === id) };
+  }
+  get GetVacancyPositionFind(): (id: number) => void {
+    return (id: number) => { return this.VacancyPosition.find(data => data.id == Number(id) ) };
   }
 }

@@ -1,5 +1,5 @@
 <template>
-  <table class="base-table">
+  <table class="base-table" v-if="array.length !== 0">
     <caption class="base-caption">
       {{
         titleTable
@@ -19,10 +19,15 @@
           :dataset="dataset"
           :type-table="typeTable"
           :key="dataset.id"
+          :delete-dispatch="deleteDispatch"
+          :router-link-get-id="routerLinkGetId"
         />
       </tr>
     </tbody>
   </table>
+  <div class="base-table-error-undefined-data" v-else>
+    Таблица не содержит данные
+  </div>
 </template>
 
 <script lang="ts">
@@ -37,6 +42,12 @@ export default {
     typeTable: { type: Array as () => PropType<InterfaceMapTable> },
     array: { type: Array },
     titleTable: { type: String },
+    deleteDispatch: {
+      type: String,
+    },
+    routerLinkGetId: {
+      type: String,
+    },
   },
 };
 </script>
