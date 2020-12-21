@@ -22,18 +22,18 @@
 </template>
 
 <script lang="ts">
-import { PropType } from "vue";
-import { FormDataInput } from "@/composition/_plagins/validate/validate-type";
-import { ValidateInput } from "@/composition/_plagins/validate/validate-input";
+import { PropType, SetupContext } from 'vue';
+import { FormDataInput } from '@/composition/_plagins/validate/validate-type';
+import { ValidateInput } from '@/composition/_plagins/validate/validate-input';
 export default {
-  name: "input-validate",
+  name: 'input-validate',
   props: {
     placeholder: {
       type: String,
     },
     typeInput: {
       type: String,
-      default: "text",
+      default: 'text',
     },
     vuexForm: {
       type: Object as () => PropType<FormData>,
@@ -50,11 +50,12 @@ export default {
       type: String,
     },
   },
-  methods: { // Перенести в файл TS
-    async emitValueInput(event:any) {
-      await this.$emit("valueInput", event);
-      ValidateInput(this.vuexForm, this.vuexInput).OnSwitch();
-    },
+  setup(props: any, { emit }: SetupContext) {
+    const emitValueInput = (event: any[]): void => {
+      emit('valueInput', event);
+      ValidateInput(props.vuexForm, props.vuexInput).OnSwitch();
+    };
+    return { ...ValidateInput, emitValueInput };
   },
 };
 </script>

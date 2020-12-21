@@ -1,20 +1,16 @@
 <template>
   <container>
-    <form>
-      <input-validate/>
-    </form>
+    <form-vacancy-position :vacancy-position="VacancyPosition" />
   </container>
 </template>
 
 <script lang="ts">
 import Container from '@/components/base/container.vue';
 import { ViewsVacancyPositionId } from '@/composition/views/vacancy-position-id.ts';
-
-import BaseForm from '@/components/base/view/form.vue';
-import _inputValidate from '@/components/base/_input-validate.vue';
+import FormVacancyPosition from '@/components/form/form-vacancy-position.vue';
 export default {
   name: 'vacancy-position',
-  components: { BaseForm, Container, _inputValidate },
+  components: { FormVacancyPosition, Container },
   setup() {
     return { ...ViewsVacancyPositionId() };
   },

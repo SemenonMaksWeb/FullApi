@@ -24,9 +24,9 @@ export type regulations =
   | 'MaxLength';
 
 export type FormDataInput = {
-  regulations: regulations[];
+  regulations?: regulations[];
   regulationsServer?: any;
-  error: {
+  error?: {
     [item: string]: ErrorObject;
   };
   value: string;
