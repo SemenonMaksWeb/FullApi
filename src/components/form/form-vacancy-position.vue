@@ -1,12 +1,24 @@
 <template>
   <form>
-    {{ formVacancyPosition }}
-      {{vacancyPosition}}
-    <!--    <input-validate text-label="Название" />-->
+    <input-validate
+      :text-label="'Название'"
+      :vuex-form="formVacancyPosition"
+      vuex-input="name"
+      @valueInput="formVacancyPosition.name.value = $event"
+    />
+    <input-validate
+      type-input="checkbox"
+      text-label="Видимость"
+      :vuex-form="formVacancyPosition"
+      vuex-input="active"
+      @valueInput="formVacancyPosition.active.value = $event"
+    />
+    <button @click.prevent="AllCheck()">Отправить</button>
   </form>
 </template>
 
 <script lang="ts">
+import { ValidateForm } from '@/composition/_plagins/validate/validate-form.ts';
 import InputValidate from '@/components/base/_input-validate.vue';
 import { PropType } from 'vue';
 import { InterfaceVacancyPositionAxios } from '@/store/vacancy-position/state-type.ts';
@@ -24,9 +36,9 @@ export default {
       default: undefined,
     },
   },
-  setup(props) {
-    console.log(props);
-    return { ...setValue(props), formVacancyPosition };
+  setup(props: any) {
+    setValue(props);
+    return { formVacancyPosition, ...ValidateForm(formVacancyPosition) };
   },
 };
 </script>

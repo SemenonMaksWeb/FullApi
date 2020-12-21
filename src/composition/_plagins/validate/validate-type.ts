@@ -29,7 +29,7 @@ export type FormDataInput = {
   error?: {
     [item: string]: ErrorObject;
   };
-  value: string;
+  value: any;
   params?: ValidateParamsAll;
 };
 export type FormData = {

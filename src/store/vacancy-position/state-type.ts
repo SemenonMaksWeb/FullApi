@@ -4,7 +4,7 @@ export type InterfaceVacancyPositionApi = {
   active: boolean;
 };
 export type InterfaceVacancyPositionAxios = {
-  id: number;
-  name: string;
-  active: boolean;
+  id?: number;
+  name?: string;
+  active?: boolean;
 };

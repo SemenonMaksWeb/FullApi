@@ -1,6 +1,6 @@
 export function ValidateInput(FormData: any, NameInput: string) {
   const ErrorUndefined = (name: string) => {
-    FormData[name].error.undefined.active = FormData[name].value === '';
+    FormData[name].error.Undefined.active = FormData[name].value === '';
   };
   const ErrorRegExp = (name: string) => {
     FormData[name].error.RegExp.active = !FormData[name].params.RegExp.test(

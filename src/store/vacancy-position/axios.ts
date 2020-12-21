@@ -36,3 +36,19 @@ export async function VacancyPositionAxiosDelete(id: string) {
     return false;
   }
 }
+export async function VacancyPositionAxiosPut(
+  id: string,
+  data: InterfaceVacancyPositionAxios
+) {
+  const dataset = await axios.put(
+    `http://localhost:3000/vacancy_position/${id}`,
+    {
+      ...data,
+    }
+  );
+  if (dataset.status === 200) {
+    return true;
+  } else {
+    return false;
+  }
+}

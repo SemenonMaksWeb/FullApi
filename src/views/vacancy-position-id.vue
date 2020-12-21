@@ -1,6 +1,10 @@
 <template>
   <container>
-    <form-vacancy-position :vacancy-position="VacancyPosition" />
+    <h1 class="base-form-title">Вакансия должности</h1>
+    <form-vacancy-position
+      v-if="VacancyPositionCheck"
+      :vacancy-position="VacancyPosition"
+    />
   </container>
 </template>
 
@@ -17,5 +21,6 @@ export default {
 };
 </script>
 
-<!--<style lang="sass">-->
-<!--</style>-->
+<style lang="sass">
+@import "src/assets/sass/base/base-form"
+</style>

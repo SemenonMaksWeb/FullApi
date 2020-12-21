@@ -12,5 +12,8 @@ export function ViewsVacancyPositionId() {
   const VacancyPosition = computed(() =>
     store.getters['GetVacancyPositionFind'](id)
   );
-  return { VacancyPosition };
+  const VacancyPositionCheck = computed(
+    () => store.getters['GetVacancyPositionCheck']
+  );
+  return { VacancyPosition, VacancyPositionCheck };
 }

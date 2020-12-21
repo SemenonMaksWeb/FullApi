@@ -1,9 +1,17 @@
 <template>
-  <div>
-    <label :class="classLabel">{{ TextLabel }}</label>
+  <div class="base-wrapper-input">
+    <label class="base-label" :class="classLabel">{{ textLabel }}</label>
     <input
+      v-if="typeInput !== 'checkbox'"
       @input="emitValueInput($event.target.value)"
       :value="vuexForm[vuexInput].value"
+      :type="typeInput"
+      :placeholder="placeholder"
+    />
+    <input
+      v-else
+      :checked="vuexForm[vuexInput].value"
+      @input="emitValueInput($event.target.checked)"
       :type="typeInput"
       :placeholder="placeholder"
     />
@@ -36,7 +44,7 @@ export default {
       default: 'text',
     },
     vuexForm: {
-      type: Object as () => PropType<FormData>,
+      type: Object as () => PropType<FormDataInput>,
       request: true,
     },
     vuexInput: {
@@ -46,7 +54,7 @@ export default {
     classLabel: {
       type: String,
     },
-    TextLabel: {
+    textLabel: {
       type: String,
     },
   },

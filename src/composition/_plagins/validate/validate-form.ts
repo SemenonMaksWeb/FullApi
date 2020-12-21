@@ -1,6 +1,6 @@
-import { ValidateInput } from '@/composition/_plagins/validate/validate-input.js';
-import { FormData } from '@/composition/_plagins/validate/validate-type.js';
-export function ValidateForm(FormDataAll: FormData) {
+import { ValidateInput } from '@/composition/_plagins/validate/validate-input.ts';
+// import { FormData } from '@/composition/_plagins/validate/validate-type.js';
+export const ValidateForm = (FormDataAll: any) => {
   const AllCheckChient = (): boolean => {
     let fullValidClient = true;
     for (const keyNameInput in FormDataAll) {
@@ -17,27 +17,30 @@ export function ValidateForm(FormDataAll: FormData) {
     }
     return fullValidClient;
   };
-  const AllCheckServer = (checkClient: boolean): boolean => {
+  const AllCheckServer = async (checkClient: boolean): Promise<boolean> => {
     let checkServer = true;
     if (checkClient === true) {
-      for (const keyNameInput in FormDataAll) {
-        for (const keyNamePag in FormDataAll[keyNameInput].regulationsServer) {
+      for (const keyNameInput in FormDataAll.value) {
+        for (const keyNamePag in FormDataAll.value[keyNameInput]
+          .regulationsServer) {
           if (
-            FormDataAll[keyNameInput].regulationsServer[keyNamePag]() === true
+            FormDataAll.value[keyNameInput].regulationsServer[keyNamePag](
+              FormDataAll
+            ) === true
           ) {
-            FormDataAll[keyNameInput].error[keyNamePag].active = true;
+            FormDataAll.value[keyNameInput].error[keyNamePag].active = true;
             checkServer = false;
           } else {
-            FormDataAll[keyNameInput].error[keyNamePag].active = false;
+            FormDataAll.value[keyNameInput].error[keyNamePag].active = false;
           }
         }
       }
       return checkServer;
     } else return false;
   };
-  const AllCheck = (): boolean => {
+  const AllCheck = async (): Promise<boolean> => {
     const checkClient = AllCheckChient();
-    return AllCheckServer(checkClient);
+    return await AllCheckServer(checkClient);
   };
   return { AllCheck };
-}
+};
