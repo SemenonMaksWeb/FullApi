@@ -44,9 +44,9 @@ export class CityService {
       name: Like(`${nameQuery}%`),
     });
   }
-  // findOne(id: string) {
-  //   return this.CityRepository.findOne(id);
-  // }
+  findOne(id: string) {
+    return this.CityRepository.findOne(id);
+  }
   async remove(id: string) {
     return await this.CityRepository.delete(id);
   }

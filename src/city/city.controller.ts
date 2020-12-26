@@ -32,15 +32,15 @@ export class CityController {
       meta,
     };
   }
-  // @Get(':id')
-  // async findOne(@Param('id') id: string) {
-  //   let data = await this.CityService.findOne(id);
-  //   let meta  = this.CityService.setMetaGet(data, `Город с id ${id} не найден`);
-  //   return {
-  //     data,
-  //     meta
-  //   }
-  // }
+  @Get(':id')
+  async findOne(@Param('id') id: string) {
+    let data = await this.CityService.findOne(id);
+    let meta = this.CityService.setMetaGet(data, `Город с id ${id} не найден`);
+    return {
+      data,
+      meta,
+    };
+  }
 
   @Delete(':id')
   async remove(@Param('id') id: string) {

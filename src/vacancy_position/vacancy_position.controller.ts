@@ -31,23 +31,25 @@ export class VacancyPositionController {
   async findAll(@Query('search') search: string) {
     const data = await this.VacancyPositionService.findAll(search);
     const meta = this.VacancyPositionService.setMetaGet(
-      data,
-      `Должности вакансии не найдены`,
+      data,`Должности вакансии не найдены`,
     );
     return {
       data,
       meta,
     };
   }
-  // @Get(':id')
-  // async findOne(@Param('id') id: string) {
-  //   let data = await this.VacancyPositionService.findOne(id);
-  //   let meta  = this.VacancyPositionService.setMetaGet(data, `Должности вакансии с id ${id} не найден`);
-  //   return {
-  //     data,
-  //     meta
-  //   }
-  // }
+  @Get(':id')
+  async findOne(@Param('id') id: string) {
+    let data = await this.VacancyPositionService.findOne(id);
+    let meta = this.VacancyPositionService.setMetaGet(
+      data,
+      `Должности вакансии с id ${id} не найден`,
+    );
+    return {
+      data,
+      meta,
+    };
+  }
 
   @Delete(':id')
   async remove(@Param('id') id: string) {

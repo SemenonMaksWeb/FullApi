@@ -20,10 +20,10 @@ export class VacancyService {
     } else {
       // return CreateVacancyDto;
       await this.VacancyRepository.save(CreateVacancyDto);
-      return{}
+      return {};
     }
   }
-  async update(CreateVacancyDto: CreateVacancyDto, id:string) {
+  async update(CreateVacancyDto: CreateVacancyDto, id: string) {
     const NotValid = await this.checkValidAll(CreateVacancyDto);
     if (this.ApiValidateServer.errorObjectNull(NotValid)) {
       return { error: NotValid };
@@ -118,7 +118,12 @@ export class VacancyService {
         info: "'position': 'id должности'",
       };
     } else {
-      if (await this.ApiValidateServer.errorGetRepositoryId('vacancy_position', value)) {
+      if (
+        await this.ApiValidateServer.errorGetRepositoryId(
+          'vacancy_position',
+          value,
+        )
+      ) {
         return { text: 'указанная должность не найдена' };
       }
     }

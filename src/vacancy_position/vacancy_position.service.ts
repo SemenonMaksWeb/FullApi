@@ -23,7 +23,7 @@ export class VacancyPositionService {
     }
   }
   async update(id: string, body: CreateVacancyPositionDto) {
-    const check = await this.ValidName(body.name);
+    const check = await this.ValidName(body.name, Number(id));
     if (this.ApiValidateServer.errorUndefined(check)) {
       const data = await this.VacancyPositionRepository.update(id, body);
       const meta = this.setMetaUpdate(data.affected, id);
@@ -44,9 +44,9 @@ export class VacancyPositionService {
       name: Like(`${nameQuery}%`),
     });
   }
-  // findOne(id: string) {
-  //   return this.vacancy_positionRepository.findOne(id);
-  // }
+  findOne(id: string) {
+    return this.VacancyPositionRepository.findOne(id);
+  }
   async remove(id: string) {
     return await this.VacancyPositionRepository.delete(id);
   }
@@ -88,25 +88,28 @@ export class VacancyPositionService {
       return meta;
     }
   }
-  async ValidName(name) {
+  
+  async ValidName(name, id?: number) {
     const error = {};
     if (this.ApiValidateServer.errorUndefined(name)) {
       error['text'] =
         'Вы не указали название должности вакансииа в теле ответа';
-      error['info'] = "{'name': 'название должности вакансииа'}";
+      error['info'] = "{'name': 'название должности вакансии'}";
       return error;
     } else if (this.ApiValidateServer.errorType(name, 'string')) {
       return { error: 'Название должности вакансииа является строкой' };
-    } else if (
-      this.ApiValidateServer.errorUnique(
+    } else {
+      const check = await this.ApiValidateServer.errorUnique(
         this.VacancyPositionRepository,
         name,
         'name',
-      )
-    ) {
-      error['text'] =
-        'Название должности вакансииа должно является уникальным значением';
-      return error;
+        id,
+      );
+      if (check) {
+        error['text'] =
+          'Название должности вакансииа должно является уникальным значением';
+        return error;
+      }
     }
   }
 }

@@ -8,7 +8,7 @@ export class ApiValidateServer {
     else return false;
   }
   errorUndefined(value) {
-    if (value === undefined) return true;
+    if (value === undefined || value.length === 0) return true;
     else return false;
   }
   errorUndefinedDelete(error) {
@@ -21,10 +21,13 @@ export class ApiValidateServer {
     if (Object.keys(object).length !== 0) return true;
     else return false;
   }
-  async errorUnique(table, value, nameColumn: string) {
+  async errorUnique(table, value, nameColumn: string, id?: number) {
     const check = await table.findOne({
       where: { [nameColumn]: value },
     });
+    if (id !== undefined && check !== undefined) {
+      return check.id !== id;
+    }
     if (check !== undefined) return true;
     else return false;
   }
