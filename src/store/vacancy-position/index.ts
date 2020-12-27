@@ -16,6 +16,10 @@ export default class VacancyPosition extends VuexModule {
     this.VacancyPosition = data;
   }
   @Mutation
+  PushVacancyPosition(data: any) {
+    this.VacancyPosition.push(data);
+  }
+  @Mutation
   SetIndexVacancyPosition(data: any) {
     data.data.id = this.VacancyPosition[data.index].id;
     this.VacancyPosition[data.index] = data.data;
@@ -47,6 +51,7 @@ export default class VacancyPosition extends VuexModule {
       this.context.commit('DeleteVacancyPosition', index);
     }
   }
+
   // id: string, data:InterfaceVacancyPositionAxios
   @Action({})
   async VacancyPositionActionPut(data: any) {
@@ -58,26 +63,25 @@ export default class VacancyPosition extends VuexModule {
         index,
         data: data.data,
       });
-      return true;
+      return false;
       // Ошибок с сервера нету
     } else {
-      return false;
+      return true;
     }
   }
+
   @Action({})
   async VacancyPositionActionPost(data: any) {
     // Запись найдена
     const dataset = await VacancyPositionAxiosPost(data.id, data.data);
     if (dataset) {
-      const index = this.context.getters['GetVacancyPositionIndex'](data.id);
-      this.context.commit('SetIndexVacancyPosition', {
-        index,
+      this.context.commit('PushVacancyPosition', {
         data: data.data,
       });
-      return true;
+      return false;
       // Ошибок с сервера нету
     } else {
-      return false;
+      return true;
     }
   }
 

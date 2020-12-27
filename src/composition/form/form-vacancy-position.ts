@@ -5,16 +5,17 @@ import { store } from '@/store/index.ts';
 import router from '@/router/index.ts';
 
 export const ServerApi = async (Form: any) => {
-  const name = Form.value.name.value;
-  const active = Form.value.active.value;
+  const name = Form.name.value;
+  const active = Form.active.value;
   const data: InterfaceVacancyPositionAxios = { name, active };
   const id = router.currentRoute.value.params.id;
   if (id === undefined) {
-    return await store.dispatch('VacancyPositionActionPost', { data });
+    const check =  await store.dispatch('VacancyPositionActionPost', { data });
+    console.log(check);
+    return  check;
   } else {
     return await store.dispatch('VacancyPositionActionPut', { id, data });
   }
-  console.log(router.currentRoute.value.params);
 };
 
 const Form: FormData = {
@@ -35,7 +36,7 @@ const Form: FormData = {
     },
   },
   active: {
-    value: '',
+    value: true,
     regulations: [],
   },
 };
