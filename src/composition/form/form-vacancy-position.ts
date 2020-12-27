@@ -3,16 +3,14 @@ import { InterfaceVacancyPositionAxios } from '@/store/vacancy-position/state-ty
 import { ref } from 'vue';
 import { store } from '@/store/index.ts';
 import router from '@/router/index.ts';
-
+import { ValidateForm } from '@/composition/_plagins/validate/validate-form.ts';
 export const ServerApi = async (Form: any) => {
   const name = Form.name.value;
   const active = Form.active.value;
   const data: InterfaceVacancyPositionAxios = { name, active };
   const id = router.currentRoute.value.params.id;
   if (id === undefined) {
-    const check =  await store.dispatch('VacancyPositionActionPost', { data });
-    console.log(check);
-    return  check;
+    return  await store.dispatch('VacancyPositionActionPost', { data });
   } else {
     return await store.dispatch('VacancyPositionActionPut', { id, data });
   }
@@ -48,3 +46,7 @@ export function setValue(props: any) {
   }
 }
 export const formVacancyPosition = ref(Form);
+
+export  async function ValidateFull() {
+  const  check = await ValidateForm(formVacancyPosition).AllCheck();
+}
