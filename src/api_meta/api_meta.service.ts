@@ -29,29 +29,34 @@ export class ApiMetaServer {
       };
     }
   }
-  MetaServerUpdate(response, errorMessage: string){
+  MetaServerUpdate(response, errorMessage: string) {
     if (response.affected === 0) {
       return {
         text: errorMessage,
         status: 404,
       };
-    }else {
+    } else {
       return {
         status: 200,
         text: 'Запись удачно измененна',
       };
     }
   }
-  MetaServerPost(response, errorMessage: string){
-      return {
-        status: 200,
-        text: 'Запись удачно создана',
-      };
+  MetaServerPost() {
+    return {
+      status: 200,
+      text: 'Запись удачно создана',
+    };
   }
-  MetaServerValidate(){
+  MetaServerValidate() {
     return {
       status: 406,
-      text: "Не валидно введены данные"
-    }
+      text: 'Не валидно введены данные',
+    };
+  }
+  MetaServer200() {
+    return {
+      status: 200,
+    };
   }
 }

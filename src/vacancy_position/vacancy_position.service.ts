@@ -4,10 +4,12 @@ import { Like, Repository } from 'typeorm';
 import { VacancyPosition } from './vacancy_position.entity';
 import { CreateVacancyPositionDto } from './dto/create-vacancy_position.dto';
 import { ApiValidateServer } from '../api_validate/api_validate.service';
+import { ApiMetaServer } from '../api_meta/api_meta.service';
 @Injectable()
 export class VacancyPositionService {
   constructor(
     private readonly ApiValidateServer: ApiValidateServer,
+    private readonly ApiMetaServer: ApiMetaServer,
     @InjectRepository(VacancyPosition)
     private readonly VacancyPositionRepository: Repository<VacancyPosition>,
   ) {}
@@ -17,78 +19,61 @@ export class VacancyPositionService {
     vacancy_position.name = CreateVacancyPositionDto.name;
     const check = await this.ValidName(vacancy_position.name);
     if (this.ApiValidateServer.errorUndefined(check)) {
-      return this.VacancyPositionRepository.save(vacancy_position);
+      return {
+        data: await this.VacancyPositionRepository.save(vacancy_position),
+        meta: this.ApiMetaServer.MetaServerPost(),
+      };
     } else {
-      return check;
+      return { data: check, meta: this.ApiMetaServer.MetaServerValidate() };
     }
   }
   async update(id: string, body: CreateVacancyPositionDto) {
     const check = await this.ValidName(body.name, Number(id));
     if (this.ApiValidateServer.errorUndefined(check)) {
       const data = await this.VacancyPositionRepository.update(id, body);
-      const meta = this.setMetaUpdate(data.affected, id);
-      return meta;
+      return {
+        meta: this.ApiMetaServer.MetaServerUpdate(data, 'не найдена запись'),
+      };
     } else if (check !== undefined) {
-      return check;
+      return { data: check, meta: this.ApiMetaServer.MetaServerValidate() };
     }
   }
-  findAll(search) {
+  async findAll(search) {
     if (search === undefined) {
-      return this.VacancyPositionRepository.find();
+      const data = await this.VacancyPositionRepository.find();
+      return {
+        data: data,
+        meta: this.ApiMetaServer.MetaServerGet(data, 'Записи не найдены'),
+      };
     } else {
-      return this.findLike(search);
+      const data = await this.findLike(search);
+      return{
+        data: data,
+        meta: this.ApiMetaServer.MetaServerGet(data, 'Записи не найдены'), 
+      }
     }
   }
   async findLike(nameQuery) {
-    return await this.VacancyPositionRepository.find({
+    const data = await this.VacancyPositionRepository.find({
       name: Like(`${nameQuery}%`),
     });
+    return data;
   }
-  findOne(id: string) {
-    return this.VacancyPositionRepository.findOne(id);
+  async findOne(id: string) {
+    const data = await this.VacancyPositionRepository.findOne(id);
+    return {
+      data: data,
+      meta: this.ApiMetaServer.MetaServerGet(data, 'Записи не найдены'), 
+    }
   }
   async remove(id: string) {
-    return await this.VacancyPositionRepository.delete(id);
-  }
-  setMetaGet(response, errorMessage: string) {
-    if (response === undefined || response.length === 0) {
-      return {
-        error: errorMessage,
-        status: 404,
-      };
-    } else {
-      return {
-        status: 200,
-      };
+    return {
+      meta: this.ApiMetaServer.MetaServerDelete(
+        await this.VacancyPositionRepository.delete(id),
+        "Запись не найдена")
     }
   }
-  setMetaDelete(response, errorMessage: string) {
-    if (response.affected === 0) {
-      //  Количество удаленных записей
-      return {
-        text: errorMessage,
-        status: 404,
-      };
-    } else {
-      return {
-        status: 200,
-        text: 'Запись удачно удалена',
-      };
-    }
-  }
-  setMetaUpdate(response: number, id: string) {
-    const meta = {};
-    if (response === 0) {
-      meta['status'] = 404;
-      meta['text'] = `должности вакансии с ${id} не найден`;
-      return meta;
-    } else if (response === 1) {
-      meta['status'] = 200;
-      meta['text'] = `Запись c id ${id} Успешно измененна`;
-      return meta;
-    }
-  }
-  
+
   async ValidName(name, id?: number) {
     const error = {};
     if (this.ApiValidateServer.errorUndefined(name)) {

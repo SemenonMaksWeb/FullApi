@@ -23,45 +23,34 @@ export class VacancyPositionController {
       CreateVacancyPositionDto,
     );
     return {
-      data,
+      ...data,
     };
   }
 
   @Get()
   async findAll(@Query('search') search: string) {
     const data = await this.VacancyPositionService.findAll(search);
-    const meta = this.VacancyPositionService.setMetaGet(
-      data,`Должности вакансии не найдены`,
-    );
     return {
-      data,
-      meta,
+      ...data,
     };
   }
+
   @Get(':id')
   async findOne(@Param('id') id: string) {
     let data = await this.VacancyPositionService.findOne(id);
-    let meta = this.VacancyPositionService.setMetaGet(
-      data,
-      `Должности вакансии с id ${id} не найден`,
-    );
     return {
-      data,
-      meta,
+      ... data,
     };
   }
 
   @Delete(':id')
   async remove(@Param('id') id: string) {
     const data = await this.VacancyPositionService.remove(id);
-    const meta = this.VacancyPositionService.setMetaDelete(
-      data,
-      `Должность вакансии с id ${id} не найдена`,
-    );
     return {
-      meta,
+      ... data,
     };
   }
+
   @Put(':id')
   async update(
     @Param('id') id: string,
