@@ -9,4 +9,9 @@ export default [
     name: 'vacancy-position-id',
     component: () => import('@/views/vacancy-position-id.vue'),
   },
+  {
+    path: '/vacancy/position/create',
+    name: 'vacancy-position-create',
+    component: () => import('@/views/vacancy-position-create.vue'),
+  },
 ];

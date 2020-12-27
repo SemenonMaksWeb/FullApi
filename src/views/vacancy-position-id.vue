@@ -13,7 +13,7 @@ import Container from '@/components/base/container.vue';
 import { ViewsVacancyPositionId } from '@/composition/views/vacancy-position-id.ts';
 import FormVacancyPosition from '@/components/form/form-vacancy-position.vue';
 export default {
-  name: 'vacancy-position',
+  name: 'vacancy-position-id',
   components: { FormVacancyPosition, Container },
   setup() {
     return { ...ViewsVacancyPositionId() };

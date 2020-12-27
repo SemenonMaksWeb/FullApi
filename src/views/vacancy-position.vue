@@ -7,6 +7,7 @@
       :delete-dispatch="'VacancyPositionActionDelete'"
       :router-link-get-id="'vacancy/position'"
     />
+    <router-link to="/vacancy/position/create">Создать новый</router-link>
   </container>
 </template>
 

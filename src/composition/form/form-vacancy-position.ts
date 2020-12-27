@@ -9,8 +9,12 @@ export const ServerApi = async (Form: any) => {
   const active = Form.value.active.value;
   const data: InterfaceVacancyPositionAxios = { name, active };
   const id = router.currentRoute.value.params.id;
-  await store.dispatch('VacancyPositionActionPut', { id, data });
-  return true;
+  if (id === undefined) {
+    return await store.dispatch('VacancyPositionActionPost', { data });
+  } else {
+    return await store.dispatch('VacancyPositionActionPut', { id, data });
+  }
+  console.log(router.currentRoute.value.params);
 };
 
 const Form: FormData = {

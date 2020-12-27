@@ -46,7 +46,21 @@ export async function VacancyPositionAxiosPut(
       ...data,
     }
   );
-  if (dataset.status === 200) {
+  if (dataset.data.meta.status === 200) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+export async function VacancyPositionAxiosPost(
+  id: string,
+  data: InterfaceVacancyPositionAxios
+) {
+  const dataset = await axios.post(`http://localhost:3000/vacancy_position`, {
+    ...data,
+  });
+  if (dataset.data.meta.status === 200) {
     return true;
   } else {
     return false;

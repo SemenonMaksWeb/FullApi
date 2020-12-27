@@ -3,12 +3,12 @@ import { ValidateInput } from '@/composition/_plagins/validate/validate-input.ts
 export const ValidateForm = (FormDataAll: any) => {
   const AllCheckChient = (): boolean => {
     let fullValidClient = true;
-    for (const keyNameInput in FormDataAll) {
-      ValidateInput(FormDataAll, keyNameInput).OnSwitch();
-      for (const key in FormDataAll[keyNameInput].error) {
+    for (const keyNameInput in FormDataAll.value) {
+      ValidateInput(FormDataAll.value, keyNameInput).OnSwitch();
+      for (const key in FormDataAll.value[keyNameInput].error) {
         if (
-          FormDataAll[keyNameInput].error[key].active === true &&
-          FormDataAll[keyNameInput].error[key].type !== 'server'
+          FormDataAll.value[keyNameInput].error[key].active === true &&
+          FormDataAll.value[keyNameInput].error[key].type !== 'server'
         ) {
           fullValidClient = false;
           break;

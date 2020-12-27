@@ -3,6 +3,7 @@ import {
   VacancyPositionAxiosGet,
   VacancyPositionAxiosDelete,
   VacancyPositionAxiosPut,
+  VacancyPositionAxiosPost,
 } from '@/store/vacancy-position/axios.ts';
 import { InterfaceVacancyPositionAxios } from '@/store/vacancy-position/state-type.ts';
 @Module
@@ -57,7 +58,26 @@ export default class VacancyPosition extends VuexModule {
         index,
         data: data.data,
       });
+      return true;
       // Ошибок с сервера нету
+    } else {
+      return false;
+    }
+  }
+  @Action({})
+  async VacancyPositionActionPost(data: any) {
+    // Запись найдена
+    const dataset = await VacancyPositionAxiosPost(data.id, data.data);
+    if (dataset) {
+      const index = this.context.getters['GetVacancyPositionIndex'](data.id);
+      this.context.commit('SetIndexVacancyPosition', {
+        index,
+        data: data.data,
+      });
+      return true;
+      // Ошибок с сервера нету
+    } else {
+      return false;
     }
   }
 

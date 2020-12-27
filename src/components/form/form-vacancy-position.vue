@@ -13,7 +13,7 @@
       vuex-input="active"
       @valueInput="formVacancyPosition.active.value = $event"
     />
-    <button @click.prevent="AllCheck()">Отправить</button>
+    <button @click.prevent="AllCheck()">Отправить</button><br />
   </form>
 </template>
 
