@@ -18,50 +18,33 @@ export class СompanyController {
   @Post()
   async create(@Body() CreateСompanyDto: CreateCompanyDto) {
     const data = await this.СompanyService.create(CreateСompanyDto);
-    return {
-      data,
-    };
+    return { ...data};
   }
 
   @Get()
   async findAll(@Query('search, page') search: string) {
     const data = await this.СompanyService.findAll(search);
-    const meta = this.СompanyService.setMetaGet(data, `Города не найдены`);
-    return {
-      data,
-      meta,
-    };
+    return { ...data};
   }
+
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    const data = await this.СompanyService.findOne(id);
-    const meta = this.СompanyService.setMetaGet(
-      data,
-      `Город с id ${id} не найден`,
-    );
-    return {
-      data,
-      meta,
-    };
+    const data = await this.СompanyService.findOne(id);;
+    return { ...data};
   }
 
   @Delete(':id')
   async remove(@Param('id') id: string) {
     const data = await this.СompanyService.remove(id);
-    const meta = this.СompanyService.setMetaDelete(
-      data,
-      `Город с id ${id} не найден`,
-    );
-    return {
-      meta,
-    };
+    return { ...data};
   }
+  
   @Put(':id')
   async update(
     @Param('id') id: string,
     @Body() CreateСompanyDto: CreateCompanyDto,
   ) {
     const data = await this.СompanyService.update(id, CreateСompanyDto);
-    return data;
+    return { ...data};
   }
 }

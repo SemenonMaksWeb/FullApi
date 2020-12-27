@@ -18,44 +18,29 @@ export class CityController {
   @Post()
   async create(@Body() CreateCityDto: CreateCityDto) {
     const data = await this.CityService.create(CreateCityDto);
-    return {
-      data,
-    };
+    return { ...data };
   }
 
   @Get()
   async findAll(@Query('search') search: string) {
     const data = await this.CityService.findAll(search);
-    const meta = this.CityService.setMetaGet(data, `Города не найдены`);
-    return {
-      data,
-      meta,
-    };
+    return { ...data };
   }
   @Get(':id')
   async findOne(@Param('id') id: string) {
     let data = await this.CityService.findOne(id);
-    let meta = this.CityService.setMetaGet(data, `Город с id ${id} не найден`);
-    return {
-      data,
-      meta,
-    };
+    return { ...data };
   }
 
   @Delete(':id')
   async remove(@Param('id') id: string) {
     const data = await this.CityService.remove(id);
-    const meta = this.CityService.setMetaDelete(
-      data,
-      `Город с id ${id} не найден`,
-    );
-    return {
-      meta,
-    };
+    return { ...data };
   }
+  
   @Put(':id')
   async update(@Param('id') id: string, @Body() CreateCityDto: CreateCityDto) {
     const data = await this.CityService.update(id, CreateCityDto);
-    return data;
+    return { ...data };
   }
 }

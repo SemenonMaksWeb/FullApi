@@ -4,38 +4,46 @@ import { Repository, Like, In } from 'typeorm';
 import { Vacancy } from './vacancy.entity';
 import { CreateVacancyDto } from './dto/create-vacancy.dto';
 import { ApiValidateServer } from '../api_validate/api_validate.service';
-
+import { ApiMetaServer } from '../api_meta/api_meta.service';
 @Injectable()
 export class VacancyService {
   constructor(
     private readonly ApiValidateServer: ApiValidateServer,
+    private readonly ApiMetaServer: ApiMetaServer,
     @InjectRepository(Vacancy)
     private readonly VacancyRepository: Repository<Vacancy>,
   ) {}
 
-  async create(CreateVacancyDto: CreateVacancyDto) {
-    const NotValid = await this.checkValidAll(CreateVacancyDto);
-    if (this.ApiValidateServer.errorObjectNull(NotValid)) {
-      return { error: NotValid };
+  async create(body: CreateVacancyDto) {
+    const check = await this.checkValidAll(body);
+    if (this.ApiValidateServer.errorObjectNull(check)) {
+      return { data: check, meta: this.ApiMetaServer.MetaServerValidate() };
     } else {
-      // return CreateVacancyDto;
-      await this.VacancyRepository.save(CreateVacancyDto);
-      return {};
+      return{
+        data: await this.VacancyRepository.save(body),
+        meta: this.ApiMetaServer.MetaServerPost(), 
+      }
+       
     }
   }
-  async update(CreateVacancyDto: CreateVacancyDto, id: string) {
-    const NotValid = await this.checkValidAll(CreateVacancyDto);
-    if (this.ApiValidateServer.errorObjectNull(NotValid)) {
-      return { error: NotValid };
+
+  async update(body: CreateVacancyDto, id: string) {
+    const check = await this.checkValidAll(body, id);
+    if (this.ApiValidateServer.errorObjectNull(check)) {
+       return { data: check, meta: this.ApiMetaServer.MetaServerValidate() };
     } else {
-      // return CreateVacancyDto;
-      // return this.VacancyRepository.update(CreateVacancyDto);
+      const data = await this.VacancyRepository.update(id, body);
+      return{
+        meta: this.ApiMetaServer.MetaServerUpdate(data, 'не найдена запись'),
+      }
+
     }
   }
-  findAll(query, limit = 2) {
+
+  async findAll(query, limit = 2) {
     const pagination = this.setPagination(query.page, limit);
     const where = this.setWhere(query.search, query.city, query.vacancy);
-    return this.VacancyRepository.find({
+    const data = await this.VacancyRepository.find({
       select: [
         'id',
         'title',
@@ -50,16 +58,32 @@ export class VacancyService {
       relations: ['city', 'vacancy_position', 'company'],
       ...pagination,
     });
+    return {
+      data: data,
+      meta: this.ApiMetaServer.MetaServerGet(data, 'Записи не найдены'),
+    }
   }
-  findOne(id: string) {
-    return this.VacancyRepository.findOne(id, {
+
+  async findOne(id: string) {
+    const data  = await this.VacancyRepository.findOne(id, {
       relations: ['city', 'vacancy_position', 'company'],
     });
+    return {
+      data: data,
+      meta: this.ApiMetaServer.MetaServerGet(data, 'Записи не найдены'),
+    }
   }
+
   async remove(id: string) {
-    return await this.VacancyRepository.delete(id);
+    return {
+      meta: this.ApiMetaServer.MetaServerDelete(
+        await this.VacancyRepository.delete(id),
+        'Запись не найдена',
+      ),
+    };
   }
-  async checkValidAll(body) {
+
+  async checkValidAll(body, id?: string) {
     let error = {};
     error['income_min'] = this.checkValidIncomeType(body.income_min);
     error['income_max'] = this.checkValidIncomeType(body.income_max);
@@ -70,8 +94,7 @@ export class VacancyService {
     error['duties'] = this.checkValidStringUndefined(body.duties);
     error['requirements'] = this.checkValidStringUndefined(body.requirements);
     error['type_work'] = this.checkValidTypeWork(body.type_work);
-    error['title'] = await this.checkValidTitle(body.title);
-    error['title'] = await this.checkValidTitle(body.title);
+    error['title'] = await this.checkValidTitle(body.title, Number(id));
     error['city'] = await this.checkValidCity(body.city);
     error['company'] = await this.checkValidCompany(body.company);
     error['position'] = await this.checkValidPosition(body.vacancy_position);
@@ -99,6 +122,7 @@ export class VacancyService {
       }
     }
   }
+
   async checkValidCompany(value) {
     if (this.ApiValidateServer.errorUndefined(value)) {
       return {
@@ -111,6 +135,7 @@ export class VacancyService {
       }
     }
   }
+
   async checkValidPosition(value) {
     if (this.ApiValidateServer.errorUndefined(value)) {
       return {
@@ -128,6 +153,7 @@ export class VacancyService {
       }
     }
   }
+
   checkValidStringUndefined(value) {
     if (this.ApiValidateServer.errorUndefined(value) === false) {
       if (this.ApiValidateServer.errorType(value, 'string')) {
@@ -135,11 +161,13 @@ export class VacancyService {
       }
     }
   }
+
   checkValidIncomeType(value) {
     if (this.ApiValidateServer.errorType(value, 'number')) {
       return { text: 'Указанное значение не является числом' };
     }
   }
+
   checkValidTypeWork(value) {
     const validValue = ['Удаленный', 'В компании', null];
     if (validValue.filter((data) => data === value).length === 0) {
@@ -149,7 +177,8 @@ export class VacancyService {
       };
     }
   }
-  async checkValidTitle(value) {
+
+  async checkValidTitle(value, id?:number) {
     const error = {};
     if (this.ApiValidateServer.errorUndefined(value)) {
       error['text'] = 'Вы не указали вакансии города в теле ответа';
@@ -162,38 +191,14 @@ export class VacancyService {
         this.VacancyRepository,
         value,
         'title',
+        id
       )
     ) {
       error['text'] = 'Название вакансии должно является уникальным значением';
       return error;
     }
   }
-  setMetaGet(response, errorMessage: string) {
-    if (response === undefined || response.length === 0) {
-      return {
-        error: errorMessage,
-        status: 404,
-      };
-    } else {
-      return {
-        status: 200,
-      };
-    }
-  }
-  setMetaDelete(response, errorMessage: string) {
-    if (response.affected === 0) {
-      //  Количество удаленных записей
-      return {
-        error: errorMessage,
-        status: 404,
-      };
-    } else {
-      return {
-        status: 200,
-        text: 'Запись удачно удалена',
-      };
-    }
-  }
+  
   setPagination(page, limit) {
     const pagination = {};
     pagination['take'] = limit;
@@ -202,6 +207,7 @@ export class VacancyService {
     }
     return pagination;
   }
+
   setWhere(search, city, vacancy) {
     const where = {};
     if (search !== undefined) {

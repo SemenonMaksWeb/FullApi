@@ -4,91 +4,80 @@ import { Like, Repository } from 'typeorm';
 import { City } from './city.entity';
 import { CreateCityDto } from './dto/create-city.dto';
 import { ApiValidateServer } from '../api_validate/api_validate.service';
+import { ApiMetaServer } from '../api_meta/api_meta.service';
+
 @Injectable()
 export class CityService {
   constructor(
     private readonly ApiValidateServer: ApiValidateServer,
+    private readonly ApiMetaServer: ApiMetaServer,
     @InjectRepository(City)
     private readonly CityRepository: Repository<City>,
   ) {}
 
-  async create(CreateCityDto: CreateCityDto) {
+  async create(body: CreateCityDto) {
     const city = new City();
-    city.name = CreateCityDto.name;
+    city.name = body.name;
     const check = await this.ValidName(city.name);
     if (this.ApiValidateServer.errorUndefined(check)) {
-      return this.CityRepository.save(city);
+      return {
+        data: await this.CityRepository.save(city),
+        meta: this.ApiMetaServer.MetaServerPost(),
+      };
     } else {
-      return check;
+      return { data: check, meta: this.ApiMetaServer.MetaServerValidate() };
     }
   }
+
   async update(id: string, body: CreateCityDto) {
-    const check = await this.ValidName(body.name);
+    const check = await this.ValidName(body.name, Number(id));
     if (this.ApiValidateServer.errorUndefined(check)) {
       const data = await this.CityRepository.update(id, body);
-      const meta = this.setMetaUpdate(data.affected, id);
-      return meta;
+      return {
+        meta: this.ApiMetaServer.MetaServerUpdate(data, 'не найдена запись'),
+      };
     } else {
-      return check;
+      return { data: check, meta: this.ApiMetaServer.MetaServerValidate() };
     }
   }
-  findAll(search) {
+
+  async findAll(search) {
+    let data = undefined;
     if (search === undefined) {
-      return this.CityRepository.find();
+      data = await this.CityRepository.find();
     } else {
-      return this.findLike(search);
+      data = await this.findLike(search);
     }
+    return {
+      data: data,
+      meta: this.ApiMetaServer.MetaServerGet(data, 'Записи не найдены'),
+    };
   }
+
   async findLike(nameQuery) {
     return await this.CityRepository.find({
       name: Like(`${nameQuery}%`),
     });
   }
-  findOne(id: string) {
-    return this.CityRepository.findOne(id);
+  
+  async findOne(id: string) {
+    const data = await this.CityRepository.findOne(id);
+    return {
+      data: data,
+      meta: this.ApiMetaServer.MetaServerGet(data, 'Записи не найдены'),
+    };
   }
+
   async remove(id: string) {
-    return await this.CityRepository.delete(id);
+    return {
+      meta: this.ApiMetaServer.MetaServerDelete(
+        await this.CityRepository.delete(id),
+        'Запись не найдена',
+      ),
+    };
   }
-  setMetaGet(response, errorMessage: string) {
-    if (response === undefined || response.length === 0) {
-      return {
-        error: errorMessage,
-        status: 404,
-      };
-    } else {
-      return {
-        status: 200,
-      };
-    }
-  }
-  setMetaDelete(response, errorMessage: string) {
-    if (response.affected === 0) {
-      //  Количество удаленных записей
-      return {
-        text: errorMessage,
-        status: 404,
-      };
-    } else {
-      return {
-        status: 200,
-        text: 'Запись удачно удалена',
-      };
-    }
-  }
-  setMetaUpdate(response: number, id: string) {
-    const meta = {};
-    if (response === 0) {
-      meta['status'] = 404;
-      meta['text'] = `Город с ${id} не найден`;
-      return meta;
-    } else if (response === 1) {
-      meta['status'] = 200;
-      meta['text'] = `Запись c id ${id} Успешно измененна`;
-      return meta;
-    }
-  }
-  async ValidName(name) {
+
+  async ValidName(name, id?: number) {
     const error = {};
     if (this.ApiValidateServer.errorUndefined(name)) {
       error['text'] = 'Вы не указали название города в теле ответа';
@@ -97,7 +86,7 @@ export class CityService {
     } else if (this.ApiValidateServer.errorType(name, 'string')) {
       return { error: 'Название города является строкой' };
     } else if (
-      this.ApiValidateServer.errorUnique(this.CityRepository, name, 'name')
+      await this.ApiValidateServer.errorUnique(this.CityRepository, name, 'name', id)
     ) {
       error['text'] = 'Название города должно является уникальным значением';
       return error;

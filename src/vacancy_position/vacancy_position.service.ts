@@ -47,10 +47,10 @@ export class VacancyPositionService {
       };
     } else {
       const data = await this.findLike(search);
-      return{
+      return {
         data: data,
-        meta: this.ApiMetaServer.MetaServerGet(data, 'Записи не найдены'), 
-      }
+        meta: this.ApiMetaServer.MetaServerGet(data, 'Записи не найдены'),
+      };
     }
   }
   async findLike(nameQuery) {
@@ -63,15 +63,16 @@ export class VacancyPositionService {
     const data = await this.VacancyPositionRepository.findOne(id);
     return {
       data: data,
-      meta: this.ApiMetaServer.MetaServerGet(data, 'Записи не найдены'), 
-    }
+      meta: this.ApiMetaServer.MetaServerGet(data, 'Записи не найдены'),
+    };
   }
   async remove(id: string) {
     return {
       meta: this.ApiMetaServer.MetaServerDelete(
         await this.VacancyPositionRepository.delete(id),
-        "Запись не найдена")
-    }
+        'Запись не найдена',
+      ),
+    };
   }
 
   async ValidName(name, id?: number) {

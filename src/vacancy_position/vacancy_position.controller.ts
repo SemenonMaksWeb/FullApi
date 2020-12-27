@@ -22,33 +22,25 @@ export class VacancyPositionController {
     const data = await this.VacancyPositionService.create(
       CreateVacancyPositionDto,
     );
-    return {
-      ...data,
-    };
+    return {...data};
   }
 
   @Get()
   async findAll(@Query('search') search: string) {
     const data = await this.VacancyPositionService.findAll(search);
-    return {
-      ...data,
-    };
+    return {...data};
   }
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
     let data = await this.VacancyPositionService.findOne(id);
-    return {
-      ... data,
-    };
+    return { ...data};
   }
 
   @Delete(':id')
   async remove(@Param('id') id: string) {
     const data = await this.VacancyPositionService.remove(id);
-    return {
-      ... data,
-    };
+    return {...data};
   }
 
   @Put(':id')
@@ -60,6 +52,6 @@ export class VacancyPositionController {
       id,
       CreateVacancyPositionDto,
     );
-    return data;
+    return {... data};
   }
 }

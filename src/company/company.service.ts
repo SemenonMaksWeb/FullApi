@@ -4,97 +4,87 @@ import { ApiValidateServer } from '../api_validate/api_validate.service';
 import { Like, Repository } from 'typeorm';
 import { Сompany } from './company.entity';
 import { CreateCompanyDto } from './dto/create-company.dto';
+import { ApiMetaServer } from '../api_meta/api_meta.service';
+
 @Injectable()
 export class CompanyService {
   constructor(
     private readonly ApiValidateServer: ApiValidateServer,
+    private readonly ApiMetaServer: ApiMetaServer,
     @InjectRepository(Сompany)
     private readonly CompanyRepository: Repository<Сompany>,
   ) {}
 
-  async create(CreateCompanyDto: CreateCompanyDto) {
-    const check = await this.ValidAll(CreateCompanyDto);
+  async create(body: CreateCompanyDto) {
+    const check = await this.ValidAll(body);
     if (this.ApiValidateServer.errorObjectNull(check) === false) {
-      return await this.CompanyRepository.save(CreateCompanyDto);
+      return {
+        data: await this.CompanyRepository.save(body),
+        meta: this.ApiMetaServer.MetaServerPost(),
+      }
     } else {
-      return check;
+      return { data: check, meta: this.ApiMetaServer.MetaServerValidate() };
     }
   }
-  async update(id: string, CreateCompanyDto: CreateCompanyDto) {
-    const check = await this.ValidAll(CreateCompanyDto);
+
+  async update(id: string, body: CreateCompanyDto) {
+    const check = await this.ValidAll(body, id);
     if (this.ApiValidateServer.errorObjectNull(check) === false) {
-      const data = await this.CompanyRepository.update(id, CreateCompanyDto);
-      const meta = this.setMetaUpdate(data.affected, id);
-      return meta;
-    } else {
-      return check;
+      const data = await this.CompanyRepository.update(id, body);
+      return {
+        meta: this.ApiMetaServer.MetaServerUpdate(data, 'не найдена запись'),
+      };
+
+    } else{
+      return { data: check, meta: this.ApiMetaServer.MetaServerValidate() };
     }
   }
-  findAll(search: string) {
+
+  async findAll(search) {
+    let data = undefined;
     if (search === undefined) {
-      return this.CompanyRepository.find();
+      data = await this.CompanyRepository.find();
     } else {
-      return this.findLike(search);
+      data = await this.findLike(search);
     }
+    return {
+      data: data,
+      meta: this.ApiMetaServer.MetaServerGet(data, 'Записи не найдены'),
+    };
   }
+
   async findLike(nameQuery) {
     return await this.CompanyRepository.find({
       name: Like(`${nameQuery}%`),
     });
   }
-  findOne(id: string) {
-    return this.CompanyRepository.findOne(id);
+
+  async findOne(id: string) {
+    const data = await this.CompanyRepository.findOne(id);
+    return {
+      data: data,
+      meta: this.ApiMetaServer.MetaServerGet(data, 'Записи не найдены'),
+    };
   }
   async remove(id: string) {
-    return await this.CompanyRepository.delete(id);
+    return {
+      meta: this.ApiMetaServer.MetaServerDelete(
+        await this.CompanyRepository.delete(id),
+        'Запись не найдена',
+      ),
+    };
   }
-  setMetaGet(response, errorMessage: string) {
-    if (response === undefined || response.length === 0) {
-      return {
-        error: errorMessage,
-        status: 404,
-      };
-    } else {
-      return {
-        status: 200,
-      };
-    }
-  }
-  setMetaDelete(response, errorMessage: string) {
-    if (response.affected === 0) {
-      //  Количество удаленных записей
-      return {
-        text: errorMessage,
-        status: 404,
-      };
-    } else {
-      return {
-        status: 200,
-        text: 'Запись удачно удалена',
-      };
-    }
-  }
-  setMetaUpdate(response: number, id: string) {
-    const meta = {};
-    if (response === 0) {
-      meta['status'] = 404;
-      meta['text'] = `Компания с ${id} не найден`;
-      return meta;
-    } else if (response === 1) {
-      meta['status'] = 200;
-      meta['text'] = `Запись c id ${id} Успешно измененна`;
-      return meta;
-    }
-  }
-  async ValidAll(body) {
+
+  async ValidAll(body, id?:string) {
     let error = {};
-    error['name'] = await this.ValidName(body.name);
+    error['name'] = await this.ValidName(body.name, Number(id));
     error['address'] = await this.ValidAddress(body.address);
     error['url_google_maps'] = await this.ValidGoogleMap(body.url_google_maps);
     error = this.ApiValidateServer.errorUndefinedDelete(error);
     return error;
   }
-  async ValidName(name) {
+  
+  async ValidName(name, id?: number) {
     const error = {};
     if (this.ApiValidateServer.errorUndefined(name)) {
       error['text'] = 'Вы не указали название компания в теле ответа';
@@ -108,12 +98,14 @@ export class CompanyService {
         this.CompanyRepository,
         name,
         'name',
+        id
       )
     ) {
       error['text'] = 'Название компания должно является уникальным значением';
       return error;
     }
   }
+
   async ValidAddress(address) {
     const error = {};
     if (this.ApiValidateServer.errorUndefined(address)) {
@@ -125,6 +117,7 @@ export class CompanyService {
       return error;
     }
   }
+
   async ValidGoogleMap(url: string) {
     const error = {};
     if (this.ApiValidateServer.errorUndefined(url) === false) {

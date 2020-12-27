@@ -6,6 +6,7 @@ import {
   Post,
   Query,
   Delete,
+  Put
 } from '@nestjs/common';
 import { VacancyService } from './vacancy.service';
 import { CreateVacancyDto } from './dto/create-vacancy.dto';
@@ -17,39 +18,30 @@ export class VacancyController {
   @Post()
   async create(@Body() CreateVacancyDto: CreateVacancyDto) {
     const data = await this.VacancyService.create(CreateVacancyDto);
-    return data;
+    return { ...data };
   }
 
   @Get()
   async findAll(@Query() query) {
     const data = await this.VacancyService.findAll(query);
-    const meta = this.VacancyService.setMetaGet(data, `Вакансии не найдены`);
-    return {
-      data,
-      meta,
-    };
+    return { ...data };
   }
+  
   @Delete(':id')
   async remove(@Param('id') id: string) {
     const data = await this.VacancyService.remove(id);
-    const meta = this.VacancyService.setMetaDelete(
-      data,
-      `Вакансия с id ${id} не найдена`,
-    );
-    return {
-      meta,
-    };
+    return { ...data };
   }
+
   @Get(':id')
   async findOne(@Param('id') id: string) {
     const data = await this.VacancyService.findOne(id);
-    const meta = this.VacancyService.setMetaGet(
-      data,
-      `Вакансия с id ${id} не найдена`,
-    );
-    return {
-      data,
-      meta,
-    };
+    return { ...data };
+  }
+  
+  @Put(':id')
+  async update(@Param('id') id: string, @Body() CreateCityDto: CreateVacancyDto) {
+    const data = await this.VacancyService.update(CreateCityDto, id);
+    return { ...data };
   }
 }
