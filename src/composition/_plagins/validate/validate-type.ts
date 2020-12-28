@@ -26,9 +26,7 @@ export type regulations =
 export type FormDataInput = {
   regulations?: regulations[];
   regulationsServer?: any;
-  error?: {
-    [item: string]: ErrorObject;
-  };
+  error?: any
   value: any;
   params?: ValidateParamsAll;
 };

@@ -1,0 +1,24 @@
+=cop-margin()
+  margin-left: $offset-grid
+  margin-right: $offset-grid
+
+=col-margin($n)
+  $val: 100% / $columns * $n
+  width: $val
+  +cop-margin()
+=col-margin-xs($n)
+  $val: 100% / $columns * $n
+  +xs(width, $val)
+  +cop-margin()
+=col-margin-md($n)
+  $val: 100% / $columns * $n
+  +md(width, $val)
+  +cop-margin()
+=col-margin-sm($n)
+  $val: 100% / $columns * $n
+  +sm(width, $val)
+  +cop-margin()
+=col-margin-lg($n)
+  $val: 100% / $columns * $n
+  +lg(width, $val)
+  +cop-margin()

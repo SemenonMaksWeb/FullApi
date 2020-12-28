@@ -4,21 +4,21 @@
 
 =col($n)
   $val: 100% / $columns * $n
-  width: #{calc(#{$val} - #{$offset-grid})}
+  width: $val
   +cop-padding()
 =col-xs($n)
   $val: 100% / $columns * $n
-  +xs(width, #{calc(#{$val} - #{$offset-grid})})
+  +xs(width, $val)
   +cop-padding()
 =col-md($n)
   $val: 100% / $columns * $n
-  +md(width, #{calc(#{$val} - #{$offset-grid})})
+  +md(width, $val)
   +cop-padding()
 =col-sm($n)
   $val: 100% / $columns * $n
-  +sm(width, #{calc(#{$val} - #{$offset-grid})})
+  +sm(width, $val)
   +cop-padding()
 =col-lg($n)
   $val: 100% / $columns * $n
-  +lg(width, #{calc(#{$val} - #{$offset-grid})})
+  +lg(width, $val)
   +cop-padding()

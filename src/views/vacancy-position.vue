@@ -7,12 +7,14 @@
       :delete-dispatch="'VacancyPositionActionDelete'"
       :router-link-get-id="'vacancy/position'"
     />
-    <router-link to="/vacancy/position/create">Создать новый</router-link>
+    <router-link class="base-router-create" to="/vacancy/position/create">
+      Создать новый
+    </router-link>
   </container>
 </template>
 
 <script lang="ts">
-import { ViewsVacancyPosition } from '@/composition/views/vacancy-position';
+import { ViewsVacancyPosition,  } from '@/composition/views/vacancy-position';
 import { VacancyPositionMapTable } from '@/composition/table-map/vacancy-position.ts';
 import Container from '@/components/base/container.vue';
 import BaseTable from '@/components/base/table/base-table.vue';
@@ -26,5 +28,13 @@ export default {
 };
 </script>
 
-<!--<style lang="sass">-->
-<!--</style>-->
+<style lang="sass">
+.base-router-create
+  text-decoration: none
+  color: #555
+  +fz(18px)
+  +mt(20px)
+  +d-display(block)
+  &:hover
+    color: #333
+</style>
