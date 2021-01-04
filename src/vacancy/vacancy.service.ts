@@ -41,23 +41,59 @@ export class VacancyService {
   }
 
   async findAll(query, limit = 2) {
-    const pagination = this.setPagination(query.page, limit);
+    const pagination:{skip?: number, take?:number} = this.setPagination(query.page, limit);
     const where = this.setWhere(query.search, query.city, query.vacancy);
-    const data = await this.VacancyRepository.find({
-      select: [
-        'id',
-        'title',
-        'income_min',
-        'income_max',
-        'content',
-        'experience',
-      ],
-      where: {
-        ...where,
-      },
-      relations: ['city', 'vacancy_position', 'company'],
-      ...pagination,
-    });
+    const data = await this.VacancyRepository.createQueryBuilder("data")
+      .select([
+          "data.id" as "id",
+          "content" as "content",
+          "title" as "title",
+          "data.active" as "data_active",
+          "conditions" as "data_conditions",
+          "requirements" as "data_requirements",
+          "duties" as "data_requirements",
+          "type_work" as "data_type_work",
+          "experience" as "data_experience",
+          "chart_work" as "data_chart_work",
+          "income_min" as "data_income_min",
+          "income_max" as "data_income_max",
+          "city.name",
+          "city.id",
+          "company.name",
+          "company.id",
+          "company.active"
+
+      ])
+      .innerJoin("data.city", "city")
+      .innerJoin("data.company", "company")
+      .where(where)
+      .andWhere("city.id = data.cityId")
+      .andWhere("company.id = data.companyId")
+      .skip(pagination.skip)
+      .take(pagination.take)
+      // .getSql();
+      .execute();
+      console.log(data);
+      data.forEach(element => {
+        element.id  = element.data_id;
+        element.active  = element.data_active;
+        element.city = {
+          id: element.city_id,
+          name: element.city_name,
+        }
+        element.company = {
+          id: element.company_id,
+          name: element.company_name,
+          active: element.company_active,
+        }
+        delete element.city_id;
+        delete element.data_id;
+        delete element.city_name;
+        delete element.company_id;
+        delete element.company_name;
+        delete element.company_active;
+        delete element.data_active;
+      });
     return {
       data: data,
       meta: this.ApiMetaServer.MetaServerGet(data, 'Записи не найдены'),
@@ -199,7 +235,7 @@ export class VacancyService {
     }
   }
   
-  setPagination(page, limit) {
+  setPagination(page, limit): {skip?: number, take?:number} {
     const pagination = {};
     pagination['take'] = limit;
     if (page !== undefined && page !== 1) {

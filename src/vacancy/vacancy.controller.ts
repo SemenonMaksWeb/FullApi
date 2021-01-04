@@ -45,3 +45,4 @@ export class VacancyController {
     return { ...data };
   }
 }
+  
