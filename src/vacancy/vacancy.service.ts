@@ -73,7 +73,6 @@ export class VacancyService {
       .take(pagination.take)
       // .getSql();
       .execute();
-      console.log(data);
       data.forEach(element => {
         element.id  = element.data_id;
         element.active  = element.data_active;

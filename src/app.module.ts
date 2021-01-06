@@ -11,6 +11,7 @@ import { VacancyModule } from './vacancy/vacancy.module';
 import { VacancyPositionModule } from './vacancy_position/vacancy_position.module';
 import { CompanyModule } from './company/company.module';
 import { CityModule } from './city/city.module';
+import { UserModule } from './user/user.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -27,6 +28,7 @@ import { CityModule } from './city/city.module';
     CompanyModule,
     VacancyPositionModule,
     CityModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],

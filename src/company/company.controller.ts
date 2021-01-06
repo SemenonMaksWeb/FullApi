@@ -22,8 +22,8 @@ export class СompanyController {
   }
 
   @Get()
-  async findAll(@Query('search, page') search: string) {
-    const data = await this.СompanyService.findAll(search);
+  async findAll(@Query() query: string) {
+    const data = await this.СompanyService.findAll(query.search);
     return { ...data};
   }
 
