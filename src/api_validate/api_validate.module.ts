@@ -6,5 +6,6 @@ import { ApiValidateServer } from './api_validate.service';
   imports: [TypeOrmModule.forFeature([])],
   providers: [ApiValidateServer],
   controllers: [],
+  exports:[ApiValidateServer]
 })
 export class ApiValidateModule {}

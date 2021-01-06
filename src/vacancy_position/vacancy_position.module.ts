@@ -3,10 +3,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { VacancyPosition } from './vacancy_position.entity';
 import { VacancyPositionController } from './vacancy_position.controller';
 import { VacancyPositionService } from './vacancy_position.service';
-import { ApiValidateServer } from '../api_validate/api_validate.service';
-import { ApiMetaServer } from '../api_meta/api_meta.service';
+import { ApiValidateModule } from '../api_validate/api_validate.module';
+import { ApiMetaModule } from '../api_meta/api_meta.module';
 @Module({
-  imports: [TypeOrmModule.forFeature([VacancyPosition])],
+  imports: [TypeOrmModule.forFeature([VacancyPosition]), ApiValidateModule, ApiMetaModule],
   providers: [VacancyPositionService, ApiValidateServer, ApiMetaServer],
   controllers: [VacancyPositionController],
 })

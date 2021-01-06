@@ -3,11 +3,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Vacancy } from './vacancy.entity';
 import { VacancyController } from './vacancy.controller';
 import { VacancyService } from './vacancy.service';
-import { ApiValidateServer } from '../api_validate/api_validate.service';
-import { ApiMetaServer } from '../api_meta/api_meta.service';
+import { ApiValidateModule } from '../api_validate/api_validate.module';
+import { ApiMetaModule } from '../api_meta/api_meta.module';
 @Module({
-  imports: [TypeOrmModule.forFeature([Vacancy])],
-  providers: [VacancyService, ApiValidateServer, ApiMetaServer],
+  imports: [TypeOrmModule.forFeature([Vacancy]), ApiValidateModule, ApiMetaModule],
+  providers: [VacancyService,],
   controllers: [VacancyController],
 })
 export class VacancyModule {}

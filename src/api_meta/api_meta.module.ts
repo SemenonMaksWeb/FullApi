@@ -6,5 +6,6 @@ import { ApiMetaServer } from './api_meta.service';
   imports: [TypeOrmModule.forFeature([])],
   providers: [ApiMetaServer],
   controllers: [],
+  exports:[ApiMetaServer]
 })
 export class ApiMetaModule {}

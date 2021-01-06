@@ -66,7 +66,10 @@ export class UserService {
       login: Like(`%${nameQuery}%`),
     });
   }
-
+  async findOneAuth(id: string){
+    const data = await this.UserRepository.findOne(id);
+    return data;
+  }
   async findOne(id: string) {
     const data = await this.UserRepository.findOne(id);
     return {
