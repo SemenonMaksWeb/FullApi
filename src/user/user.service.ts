@@ -86,7 +86,8 @@ export class UserService {
   async ValidAll(body, id?:string) {
     let error = {};
     error['login'] = await this.ValidLogin(body.login, Number(id));
-    error['password'] = await this.ValidPassword(body.password, Number(id));
+    error['password'] = await this.ValidPassword(body.password);
+    error['email'] = await this.ValidEmail(body.email, Number(id));
     error = this.ApiValidateServer.errorUndefinedDelete(error);
     return error;
   }
@@ -106,12 +107,8 @@ export class UserService {
       return error;
     }
     else if (
-      await this.ApiValidateServer.errorUnique(
-        this.UserRepository,
-        name,
-        'login',
-        id
-      )
+      await this.ApiValidateServer.errorUnique
+      ( this.UserRepository, name, 'login',id )
     ) {
       error['text'] = 'Логин должен является уникальным значением';
       return error;
@@ -129,6 +126,24 @@ export class UserService {
     }
     else if(this.ApiValidateServer.errorLenghtMin(password, 6)){
       error['text'] = 'Пароль не должен быть меньше 6 символов';
+      return error;
+    }
+  }
+  async ValidEmail(email, id?: number) {
+    const error = {};
+    if (this.ApiValidateServer.errorUndefined(email)) {
+      error['text'] = 'Вы не указали email в теле ответа';
+      error['info'] = "{'email': 'email'}";
+      return error;
+    }else if(this.ApiValidateServer.errorType(email, 'string')){
+      error['text'] = 'email является строкой';
+      return error;
+    }
+    else if (
+      await this.ApiValidateServer.errorUnique
+      ( this.UserRepository, email, 'email', id)
+    ) {
+      error['text'] = 'email должен является уникальным значением';
       return error;
     }
   }
