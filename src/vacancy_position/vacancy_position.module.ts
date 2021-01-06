@@ -7,7 +7,7 @@ import { ApiValidateModule } from '../api_validate/api_validate.module';
 import { ApiMetaModule } from '../api_meta/api_meta.module';
 @Module({
   imports: [TypeOrmModule.forFeature([VacancyPosition]), ApiValidateModule, ApiMetaModule],
-  providers: [VacancyPositionService, ApiValidateServer, ApiMetaServer],
+  providers: [VacancyPositionService,],
   controllers: [VacancyPositionController],
 })
 export class VacancyPositionModule {}
