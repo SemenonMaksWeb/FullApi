@@ -45,6 +45,7 @@ export class Users {
       name: 'srcСonfirmEmail',
       type: 'varchar',
       length: 512,
+      nullable:true,
     })
     srcСonfirmEmail: string;
     // srcСonfirmPassword - Ссылка для восстановления пароля
@@ -52,6 +53,7 @@ export class Users {
       name: 'srcСonfirmPassword',
       type: 'varchar',
       length: 512,
+      nullable:true,
     })
     srcСonfirmPassword: string;
 }
