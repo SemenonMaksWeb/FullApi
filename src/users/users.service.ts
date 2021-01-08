@@ -60,7 +60,9 @@ export class UsersService {
     const salt = bcrypt.genSaltSync(12);
     return bcrypt.hashSync(password, salt);
   }
-
+  async comparePassword(passwordCheck: string, passwordBd: string): Promise<boolean> {
+    return await bcrypt.compare(passwordCheck, passwordBd);
+  }
   HashAdressEmail(data){
     const salt = bcrypt.genSaltSync(12);
     return bcrypt.hashSync(data, salt);
